@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>reviews 문서 벡터 임베딩 설정 · 비즈플래닛 마케팅 채널관리 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="root"><div class="screen-html chatbot-screen-html"><style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f3f5f8;color:#2d3340;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;font-size:14px}
+  .knowledge-topbar{height:52px;background:#302e43;color:#fff;display:flex;align-items:center;padding:0 24px;gap:28px}
+  .rb-logo{font-size:19px;font-weight:900;letter-spacing:-.03em}.rb-logo span{font-size:14px;margin-left:1px}
+  .tenant{font-size:13px;color:#d8dbe7}.tenant span{color:#9da3b6;margin:0 8px}.tenant b{color:#fff}.caret{font-size:10px}
+  .top-actions{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:#e5e7ef}.avatar{width:18px;height:18px;border-radius:50%;background:#8f95a3;display:inline-block}
+  .knowledge-nav{height:45px;background:#fff;border-bottom:1px solid #e4e8f1;display:flex;align-items:center;padding:0 24px;gap:0;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .knowledge-nav a{height:45px;display:flex;align-items:center;padding:0 14px;color:#262b36;text-decoration:none;font-size:14px;font-weight:700;white-space:nowrap;border-bottom:3px solid transparent}
+  .knowledge-nav a.active{color:#3468f6;border-bottom-color:#3468f6}.knowledge-nav em{font-style:normal;font-size:9px;color:#fff;background:#ff6262;border-radius:999px;padding:1px 4px;margin-left:4px}
+  .nav-spacer{flex:1}
+  .knowledge-main{max-width:1392px;margin:0 auto;padding:48px 56px 56px}
+  .knowledge-title-row{display:grid;grid-template-columns:1fr 96px;gap:24px;align-items:center}
+  .knowledge-title-input{height:50px;border:1px solid #e5e9f1;background:#fff;padding:0 18px;font-size:20px;color:#343a46;outline:0}
+  .save-button{height:50px;border:0;background:#a8bfff;color:#fff;font-size:16px;font-weight:800}
+  .modified{text-align:right;color:#8b93a3;font-size:13px;margin:16px 0 20px}
+  .knowledge-card{background:#fff;border:1px solid #e7ebf2}
+  .file-card{height:112px;display:grid;grid-template-columns:1fr 112px 1fr 112px;align-items:center}
+  .file-info{padding:0 24px}.file-info strong{font-size:15px;color:#4b5563;text-decoration:underline}.file-info p{margin:10px 0 0;color:#8b93a3;font-size:12px}
+  .blue-button{height:40px;border:0;background:#3868f2;color:#fff;font-size:14px;font-weight:800}.retry{margin-right:30px}
+  .embed-status{height:112px;border-left:1px solid #e7ebf2;display:grid;grid-template-columns:92px 1fr;align-content:center;padding-left:32px;column-gap:8px}
+  .embed-label{font-weight:800;color:#3f4652}.complete{color:#10b345;font-weight:900}.embed-status small{grid-column:2;color:#8b93a3;font-size:11px}
+  .reference-row{height:68px;display:grid;grid-template-columns:112px 1fr;align-items:center;padding:0 22px}.reference-row label,.chunk-settings label{font-size:13px;font-weight:800;color:#3e4652}.reference-row span,.chunk-settings span{color:#3468f6}.reference-row i,.chunk-settings i{font-style:normal;color:#a4abb8;border:1px solid #c9ced8;border-radius:50%;font-size:10px;padding:0 4px;margin-left:4px}
+  .reference-row input{height:36px;border:1px solid #d6dbe5;padding:0 14px;color:#222;background:#fff;font-size:14px}
+  .chunk-settings{height:70px;margin-top:16px;display:flex;align-items:center;gap:18px;padding:0 22px}.chunk-settings input{width:148px;height:36px;border:1px solid #d6dbe5;padding:0 14px;font-size:14px;background:#fff}.chunk-settings button{width:66px;height:36px;background:#fff;border:1px solid #3468f6;color:#3468f6;font-weight:800}.chunk-total{color:#7d8491;font-size:13px;font-weight:700;margin-left:6px}
+  .chunk-area{background:#fff;border:1px solid #e7ebf2;border-top:0;padding:24px 32px 34px}
+  .chunk-row{position:relative;margin-bottom:18px;border:1px solid #edf0f5;background:#fff;min-height:148px;padding:20px 24px 19px 30px;line-height:1.92;font-size:12px;color:#262c37;word-break:keep-all}
+  .chunk-row::before{content:'';position:absolute;left:-1px;top:0;bottom:0;width:4px;background:#3468f6}
+  .chunk-row .chunk-overlap{background:#d8ecff;color:#1d2733;padding:1px 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  .chunk-row .overlap-in{box-shadow:inset 0 0 0 1px rgba(84,151,224,.08)}
+  .chunk-row .overlap-out{box-shadow:inset 0 -1px 0 rgba(52,104,246,.22)}
+  .load-more-wrap{display:flex;justify-content:center;padding:8px 0 2px}.load-more-button{height:38px;min-width:110px;border:1px solid #3468f6;background:#fff;color:#3468f6;font-weight:800;border-radius:4px;cursor:default}
+  @media(max-width:900px){.knowledge-main{padding:28px 18px}.knowledge-nav{overflow:auto}.file-card{height:auto;grid-template-columns:1fr;gap:14px;padding:18px}.embed-status{height:auto;border-left:0;padding:0;grid-template-columns:92px 1fr}.reference-row{grid-template-columns:1fr}.chunk-settings{height:auto;flex-wrap:wrap;padding:18px}.chunk-row{font-size:12px;line-height:1.8}}
+</style>
+
+<div class="knowledge-page">
+  <header class="knowledge-topbar">
+    <div class="rb-logo">rb<span>DIALOG</span></div>
+    <div class="tenant">soho-test <span>›</span> <b>테라스의원</b> <span class="caret">▼</span></div>
+    <div class="top-actions"><span>공지사항</span><span class="avatar"></span><span>류*근님</span></div>
+  </header>
+  <nav class="knowledge-nav">
+    <a>시나리오</a><a>인텐트</a><a>엔티티</a><a>봇 응답</a><a>API 관리</a><a>AI 에이전트 <em>PRO</em></a><a class="active">Knowledge 관리 <em>PRO</em></a><a>지식 Lab</a><a>봇 설정</a>
+    <span class="nav-spacer"></span><a>훈련</a><a>서비스 배포</a><a>검증</a><a>통계</a><a>테스트</a>
+  </nav>
+  <main class="knowledge-main">
+    <section class="knowledge-title-row">
+      <input class="knowledge-title-input" value="reviews_terrace" readonly />
+      <button class="save-button" type="button">저장</button>
+    </section>
+    <div class="modified"><span style="display:inline-flex;align-items:center;height:22px;padding:0 8px;margin-right:10px;border-radius:999px;background:#eaf2ff;color:#3468f6;font-size:11px;font-weight:900">OCR 반영</span>최종수정 2026.06.23 11:02&nbsp;&nbsp; | &nbsp;&nbsp;류*근</div>
+
+    <section class="knowledge-card file-card">
+      <div class="file-info">
+        <strong>reviews_테라스의원.docx</strong>
+        <p>가능 확장자: pdf, doc, docx, ppt, pptx &nbsp;&nbsp; 문서 크기 최대 10MB 미만</p>
+      </div>
+      <button class="blue-button" type="button">문서 업로드</button>
+      <div class="embed-status">
+        <div class="embed-label">임베딩 변환</div>
+        <div class="complete">완료</div>
+        <small>(skp/text-embeddings-20240402)</small>
+      </div>
+      <button class="blue-button retry" type="button">변환 재시도</button>
+    </section>
+
+    <section class="knowledge-card reference-row">
+      <label>참고 정보명 <span>*</span> <i>?</i></label>
+      <input value="방문자 리뷰" readonly />
+    </section>
+
+    <section class="knowledge-card chunk-settings">
+      <label>청크 크기 <span>*</span> <i>?</i></label>
+      <input value="800" readonly />
+      <label>청크 오버랩 <span>*</span> <i>?</i></label>
+      <input value="200" readonly />
+      <button type="button">적용</button>
+      <div class="chunk-total">청크&nbsp;&nbsp;총 849</div>
+    </section>
+
+    <section class="chunk-area review-chunk-area">
+      <article class="chunk-row review-row" data-chunk="1"><span>테라스의원 방문자 리뷰 모음 생성일: 2026-06-23T01:55:29.063Z 총 수집 리뷰: 200개 / 문서 포함 리뷰: 200개 선정 기준: 수집된 방문자 리뷰 전체를 포함했습니다. [리뷰 1] (2026-06-19T06:28:12.000Z) - 맛집보면우는돼지 보톡스를 주기적으로 맞는데 이 병원은 간단한 보톡스라도 디자인을 꼼꼼히 해주시고 중간중간 필요한 곳이나 비대칭인 부분 말씀해주시는데 너무 감동 받았습니다. 이런 원장님이면 다른 시술도 믿고 받을 수 있을 것 같아요. [리뷰 2] (2026-06-17T05:41:27.000Z) - Boha 흑자 제거로 유명한 병원이라 추천받아 이용해봤습니다. 원장님이 직접 상담해주셔서 더욱 신뢰가 갔고 시설도 깔끔하고 간호사님들 너무 친절하세요! 날이 더워져서 흑자제거를 망설였는데 생각보다 테이프 붙인 2주동안 일상생활하는데 크게 불편함이 없었고 넓고 얕게 퍼진 흑자가 깔끔히 제거되어 후련합니다. 또 2주 뒤에 상태를 봐주신다고 하셔서 더더욱 안심이에요. 남은 기간동안 또 열심히 관리해보겠습니다. [리뷰 3] (2026-06-08T09:29:22.000Z) - 곰냥이49 예전부터 신경쓰이던 짙은 기미같은게 있어서 없애고 싶어서 방문했는데 흑자라고 진단해주시더라구요. 그래서 리팟레이저 추천해주셔서 받았는데 진짜 거짓말처럼 깨끗하게 없어져서 넘 만족했습니다. 이제 꾸준히 다니면서 잘 관리할 계획입니당.</span> <mark class="chunk-overlap overlap-out">[리뷰 4] (2026-06-06T02:38:12.000Z) - rkddlsdlek 없던 흑자가 갑자기 생겨서 검색하고 검색하고 이 병원 왔는데 후기대로 원장님께서 흑자제거 전문가답게 시술 잘해주시고 사후관리가 중요하잖아요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="2"><mark class="chunk-overlap overlap-in">[리뷰 4] (2026-06-06T02:38:12.000Z) - rkddlsdlek 없던 흑자가 갑자기 생겨서 검색하고 검색하고 이 병원 왔는데 후기대로 원장님께서 흑자제거 전문가답게 시술 잘해주시고 사후관리가 중요하잖아요.</mark> <span>2주씩 체크하시는 모습이 더 믿음이 갑니다. 감사합니다. [리뷰 5] (2026-06-01T01:28:44.000Z) - sun**** 써마지600샷 시술. 아플까봐 긴장 엄청했는데 생각보다 참을만했어요. 원장쌤이 잘 받았다고 하셔서 기대되네요. 내년에 또 받을 생각 있어요. [리뷰 6] (2026-05-30T04:17:45.000Z) - 지으으으으 스티커처럼 점이 떼어져서 신기신기! 모두 친절하세요. [리뷰 7] (2026-05-28T08:38:13.000Z) - k555**** 최고에요^^ [리뷰 8] (2026-05-28T05:22:19.000Z) - 우슬15 임신 출산 후에 걷잡을 수 없이 생겨버린 흑자. 고민고민하다 테라스의원에서 흑자 제거 했어요. 요 놈들만 없어도 살 것 같았는데 잘 뽑아져 나온거 보니 신기하고 기분 좋아요.</span> <mark class="chunk-overlap overlap-out">[리뷰 9] (2026-05-26T05:24:21.000Z) - woo**** 오늘도 테라스의원은 사람들로 북적였어요. 역시 사람들이 많이 찾는 데는 다 이유가 있는 것 같아요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="3"><mark class="chunk-overlap overlap-in">[리뷰 9] (2026-05-26T05:24:21.000Z) - woo**** 오늘도 테라스의원은 사람들로 북적였어요. 역시 사람들이 많이 찾는 데는 다 이유가 있는 것 같아요.</mark> <span>원장님과 직원분들 모두 너무 친절하시고 세심하게 진료해 주셔서, 마치 지인 병원에 온 것처럼 편안했습니다. 흑자 제거했는데 완전 깔끔하게 빠졌어요. 감사합니다. [리뷰 10] (2026-05-26T05:12:46.000Z) - wjd**** 흑자제거 잘 되었어요. 오랜 고민이 해결 되었습니다^^ [리뷰 11] (2026-05-25T01:03:51.000Z) - Jorah 미루고 미뤄두었던 흑자제거를 했습니다. 크기에 따라서 비용이 만만치 않았지만, 레이저시술 후 2주만에 상처밴드 제거시 흑자부분이 정말 거짓말처럼 제거가 되었습니다. 다시 2주 듀오덤을 붙이고 관리하면 재생이 될 것 같습니다. [리뷰 12] (2026-05-23T05:48:50.000Z) - 너만의 강아지 흑자제거후기 보고 방문했는데 시설도 깔끔하고 선생님과 직원분들이 너무너무 친절하셔 만족스러웠습니다.</span> <mark class="chunk-overlap overlap-out">[리뷰 13] (2026-05-23T04:57:31.000Z) - 이슬비8 흑자제거 하러 검색 많이하고 찾아왔는데 너무너무 잘 빠졌어요!</mark></article>
+      <article class="chunk-row review-row" data-chunk="4"><mark class="chunk-overlap overlap-in">[리뷰 13] (2026-05-23T04:57:31.000Z) - 이슬비8 흑자제거 하러 검색 많이하고 찾아왔는데 너무너무 잘 빠졌어요!</mark> <span>원장님이랑 간호사님들도 너무 친절하시고 세심하셔요. 직접 상담해주시는 것도 정말 좋았습니다. [리뷰 14] (2026-05-23T01:36:30.000Z) - Esther7873 흑자 후기가 많아 이곳을 왔는데 좋은 선택이었던 것 같아요. 의사 선생님께서 꼼꼼하시고 환자 입장에 서계시면서도, 나중에 관리 잘 못하여 속상한 일 생길까봐 세심하고 친절하게 관리방법 당부 주셔서 조심할 수 있도록 해주시네요. 간호사 선생님들도 체계적이시고 친절하십니다. 추천 드립니다. 리팟 레이저도 추천드려요. [리뷰 15] (2026-05-21T09:35:30.000Z) - 은주96 시술 잘 되었고 의사 선생님이 친절하고 꼼꼼하게 봐 주시네요!</span> <mark class="chunk-overlap overlap-out">[리뷰 16] (2026-05-19T04:14:00.000Z) - 럭키맘48 평소 강남권 피부과를 다니면서 늘 실장 상담만 길고 의사는 잠깐 보는 게 불만이었어요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="5"><mark class="chunk-overlap overlap-in">[리뷰 16] (2026-05-19T04:14:00.000Z) - 럭키맘48 평소 강남권 피부과를 다니면서 늘 실장 상담만 길고 의사는 잠깐 보는 게 불만이었어요.</mark> <span>테라스 의원은 원장님이 직접 처음부터 끝까지 상담하고 꼼꼼하게 설명해 주셔서 신뢰감이 최고입니다! 아들이 먼저 시술받고 효과가 엄청나서 저도 써마지 받았는데, 원장님이 효과 보라며 에너지 아낌없이 넣어 시술해 주셨어요. 지금은 부어있지만 두 달 뒤가 기대됩니다. 5월 이벤트(써마지600+슈링크300)로 비용 부담 없어서 대만족이에요. 집 근처에 이런 인생 피부과가 있다니 정말 다행입니다! [리뷰 17] (2026-05-12T05:54:15.000Z) - woo**** 드디어 숙원사업 해결했어요. 눈가에 있던 흑자 오늘 다 제거했어요. 뗄 때 한 방에 빠지는데 얼마나 속이 시원하던지. 그동안 이것 때문에 좀 얼굴이 어두워보이는 것 같아 신경 쓰였는데 너무 홀가분해요.</span> <mark class="chunk-overlap overlap-out">[리뷰 18] (2026-05-12T01:39:45.000Z) - 벌꿀양이 깨끗하게 흑자가 제거되었어요! 깨끗한 피부에 자신감 생겨요. 다들 너무 친절하시고 감사합니다.</mark></article>
+      <article class="chunk-row review-row" data-chunk="6"><mark class="chunk-overlap overlap-in">[리뷰 18] (2026-05-12T01:39:45.000Z) - 벌꿀양이 깨끗하게 흑자가 제거되었어요! 깨끗한 피부에 자신감 생겨요. 다들 너무 친절하시고 감사합니다.</mark> <span>[리뷰 19] (2026-05-11T01:07:55.000Z) - aud**** 아이낳고 눈가에 생긴 흑자가 6년에 걸쳐 계속 커져서 스트레스 받다가 블로그 검색 및 후기 찾아보고 병원 방문했어요. 2주 전에 리팟 시술받은 3군데 흑자가 신기하게도 깨끗하게 제거되었습니다. 추후관리까지 친절하게 잘 해주셔서 만족하고 돌아갑니다. [리뷰 20] (2026-05-09T04:50:07.000Z) - 카리스마린 딸 추천으로 흑자제거 하러 왔는데 병원이 전체적으로 깔끔하고 선생님이 매우 친절했습니다. 흑자 잘 제거되면 좋겠네요. [리뷰 21] (2026-05-09T04:26:15.000Z) - Friendship43 이전에 흑자 제거하러 왔다가 2주 지나고 방문해서 드디어 재생테이프 떼어냈는데 흑자가 말끔히 사라져서 너무 뿌듯하네요. 흑자제거는 테라스의원이 짱입니다!</span> <mark class="chunk-overlap overlap-out">[리뷰 22] (2026-05-08T05:22:15.000Z) - mi**** 흑자 레이저 제거 너무 깨끗하게 잘해주셨어요. 친절하시고 병원도 쾌적하고 너무 만족했습니다.</mark></article>
+      <article class="chunk-row review-row" data-chunk="7"><mark class="chunk-overlap overlap-in">[리뷰 22] (2026-05-08T05:22:15.000Z) - mi**** 흑자 레이저 제거 너무 깨끗하게 잘해주셨어요. 친절하시고 병원도 쾌적하고 너무 만족했습니다.</mark> <span>[리뷰 23] (2026-04-30T09:26:13.000Z) - 규울52 예약 친절하게 응대해주시고 바로 방문할 수 있었습니다. 원장 선생님도 매우 친절하게 잘 진료해주셨습니다. [리뷰 24] (2026-04-28T02:34:09.000Z) - 엔젤로즈 흑자가 깔끔하게 제거가 됐어요. 신기해요. [리뷰 25] (2026-04-27T09:43:57.000Z) - 물처럼 바람처럼 우와 거짓말처럼 흑자가 쏘옥 빠졌어요. 완전 언빌리버블입니다. 십수년 애증의 대상이었던 흑자가 이렇게 없어질 수 있다는 것에 큰 박수를 보냅니다. 감사합니다. 모두 넘 친절하셔서 위로받고 갑니다.</span> <mark class="chunk-overlap overlap-out">[리뷰 26] (2026-04-27T06:52:57.000Z) - 비비빅35 주변 지인이 흑자 제거하고 추천해줘서 그동안 고민만 하던 흑자 큰맘먹고 제거하려고 방문했는데 깨끗하게 잘 됐습니다!</mark></article>
+      <article class="chunk-row review-row" data-chunk="8"><mark class="chunk-overlap overlap-in">[리뷰 26] (2026-04-27T06:52:57.000Z) - 비비빅35 주변 지인이 흑자 제거하고 추천해줘서 그동안 고민만 하던 흑자 큰맘먹고 제거하려고 방문했는데 깨끗하게 잘 됐습니다!</mark> <span>원장님께서 엄청 친절하고 자세하게 설명 및 시술해 주신 점이 넘 좋았습니다. 그동안 가 본 피부과 중에 제일 친절하셨어요. 앞으로도 꾸준히 피부 고민 생기면 방문하려고요. 흑자 고민이시면 추천 드립니다! [리뷰 27] (2026-04-27T01:27:54.000Z) - 요구르트8093 동남아 16년차라 흑자가 많이 생겼네요. 여의사 선생님께서 편안하게 진료 봐주셨고, 4개가 있었는데 타병원에서 이런류의 시술이 한번에 제거가 안됐다는 리뷰가 있어서 혹시나 이번에 2개만 했어요. 오늘 테이프 제거했는데 깨끗하게 떨어졌어요. 4개 한번에 할 걸 그랬네요. 내년에 한국 방문시 꼭 원장님께 또 와야겠어요. 시술 후 배려에 진심이신 것 같아 믿음이 더 생겼습니다.</span> <mark class="chunk-overlap overlap-out">[리뷰 28] (2026-04-25T05:31:20.000Z) - Friendship43 평소 화장으로 매번 가리던 흉터가 있었는데 테라스의원 방문해서 확인해보니 흑자더라구요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="9"><mark class="chunk-overlap overlap-in">[리뷰 28] (2026-04-25T05:31:20.000Z) - Friendship43 평소 화장으로 매번 가리던 흉터가 있었는데 테라스의원 방문해서 확인해보니 흑자더라구요.</mark> <span>레이저 한번이면 제거가 가능하다고 해서 예약하고 방문했습니다! 매번 컨실러로 가리기 일수였는데 얼른 2주 지나고 깨끗한 피부 보고싶어요. [리뷰 29] (2026-04-25T05:08:50.000Z) - 너만의 강아지 예전에 테라스의원에서 제 얼굴에 흑자제거를 한 적이 있는데, 아빠도 요즘 얼굴에 흑자가 눈에 거슬린다 하셔서 효도겸 모시고 왔어요. 원장님 정말 세상 친절하시고 친근하시고 아프지 않도록 호다닥 끝내주셔서 언제나 믿습니다. [리뷰 30] (2026-04-25T04:51:06.000Z) - 나라공ㅇ 테라스의원 처음 방문해서 상담 받고 바로 진행했어요. 원장님이 직접 피부 상태 보면서 상태를 자세하게 설명해주셔서 신뢰가 가고 안심됐고, 시술도 생각보다 빠르게 끝났어요. 앞으로 관리 방법도 꼼꼼하게 알려주셔서 좋았어요. 전체적으로 프라이빗한 분위기라 편하게 받고 나왔어요.</span> <mark class="chunk-overlap overlap-out">[리뷰 31] (2026-04-25T04:34:17.000Z) - 엘란도르36 써마지 효과 제대로 보고 싶어서 찾아간 곳인데 정말 대만족이에요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="10"><mark class="chunk-overlap overlap-in">[리뷰 31] (2026-04-25T04:34:17.000Z) - 엘란도르36 써마지 효과 제대로 보고 싶어서 찾아간 곳인데 정말 대만족이에요.</mark> <span>사실 써마지가 가격대가 있는 시술이라 고민이 많았는데, 원장님이 직접 상담하면서 제 얼굴 라인에 맞춰 에너지를 정말 아낌없이 팍팍 넣어주시는 게 느껴졌어요. 좀 아프긴 했지만 효과가 너무 좋아서 대만족이에요. 시술받은 이후 벌써 피부가 착 달라붙는 느낌이고, 스킨보톡스랑 윤곽주사까지 같이 하니까 얼굴 라인이 훨씬 매끄러워졌어요. 꼼꼼하게 시술해 주신 덕분에 주변에서 다들 얼굴 좋아졌다고 물어보네요. 돈 아깝지 않은 역대급 만족도입니다. 다음에도 또 받을거에요. [리뷰 32] (2026-04-25T01:47:10.000Z) - 파랑새65 흑자 제거로 방문했습니다. 원장님 간호사님 모두 친절하셔요. 토요일에 오면 대기시간이 길어서 꼭 예약하셔야해요. 2주간 테이프 안 떨어지게 잘 붙였더니 깨끗하게 제거됐어요. 테이프가 안 떨어지게 유지하는게 가장 중요한 것 같아요.</span> <mark class="chunk-overlap overlap-out">[리뷰 33] (2026-04-24T08:43:47.000Z) - zzon**** 남자친구 흑자 제거를 위해서 방문 했는데, 시술 2주후 깔끔하게 제거됐어요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="11"><mark class="chunk-overlap overlap-in">[리뷰 33] (2026-04-24T08:43:47.000Z) - zzon**** 남자친구 흑자 제거를 위해서 방문 했는데, 시술 2주후 깔끔하게 제거됐어요.</mark> <span>프라이빗한 공간에서 시술받을 수 있고 대기시간도 길지 않아서 추천드립니다. 다들 친절하시고 시술 후 주의사항도 꼼꼼하게 체크해주세요. [리뷰 34] (2026-04-24T01:35:58.000Z) - Hotto 거울 보며 신경쓰이던 흑자가 말끔히 떨어졌어요. 아직 붉은기가 있어서 앞으로도 관리를 잘 해야겠지만, 속시원히 제거돼서 너무 좋습니다. 고맙습니다. [리뷰 35] (2026-04-23T07:35:46.000Z) - 짜라하핫 남편이 기미, 흑자 고민이라 검색하고 찾아서 효과 좋다고 방문한 병원이에요. 이미 흑자제거, 기미 치료로 유명한지 사람이 많더라구요. 원장님 친절하시고 과잉진료없이 필요한 것만 권해주시고 관리법, 앞으로 순서도 잘 잡아주세요. 색소가 진짜 치료가 어려운데, 좋은 병원 찾은 것 같아요. 엄마랑도 와야겠어요.</span> <mark class="chunk-overlap overlap-out">[리뷰 36] (2026-04-18T04:27:55.000Z) - 에이프릴비 굿 [리뷰 37] (2026-04-18T03:41:16.000Z) - ol**** 두달전 써마지 600샷하고 심부볼이랑 팔자가 없어져서 너무 만족하고 다시 왔어요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="12"><mark class="chunk-overlap overlap-in">[리뷰 36] (2026-04-18T04:27:55.000Z) - 에이프릴비 굿 [리뷰 37] (2026-04-18T03:41:16.000Z) - ol**** 두달전 써마지 600샷하고 심부볼이랑 팔자가 없어져서 너무 만족하고 다시 왔어요.</mark> <span>건조한 것 해결하러 권해주셨던 리쥬란하러 왔어요. 써마지 이렇게 효과본거 처음이에요. [리뷰 38] (2026-04-18T03:19:49.000Z) - SAI 보톡스 받았습니다. [리뷰 39] (2026-04-18T02:34:38.000Z) - 이끌어주는 원장님 친절하시고 실력이 훌륭하세요. 흑자 한번에 제거됐어요. [리뷰 40] (2026-04-17T02:23:00.000Z) - mda**** 작년에 흑자제거 하고 재발 안되고 깨끗해져서 다시 또 제거하러 왔어요. 테라스 흑자제거 잘해요. [리뷰 41] (2026-04-17T02:21:18.000Z) - joha**** 리팟하러 왔는데 원장님이 친절하게 상담설명해주시고 빠르게 받고 왔어요. 2주 뒤 완전히 사라지길 바라며 기다리겠습니다.</span> <mark class="chunk-overlap overlap-out">[리뷰 42] (2026-04-17T02:08:34.000Z) - 코달곰크 엄마 흑자제거 큰 부분 제거하러 왔어요. 2주 지나 3주 후에 깨끗하게 제거되었네요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="13"><mark class="chunk-overlap overlap-in">[리뷰 42] (2026-04-17T02:08:34.000Z) - 코달곰크 엄마 흑자제거 큰 부분 제거하러 왔어요. 2주 지나 3주 후에 깨끗하게 제거되었네요.</mark> <span>[리뷰 43] (2026-04-17T02:00:34.000Z) - gari**** 볼이 흘러내려서 예약잡고 왔는데 원장님이 더 꺼지면 안된다고 쥬베룩 볼륨 권해주셔서 시술하고 갑니다. 얼굴이 젊었을 때 느낌나면서 예뻐져서 신기하네요. [리뷰 44] (2026-04-16T03:07:59.000Z) - 노일59 흑자제거 최고! [리뷰 45] (2026-04-14T03:40:44.000Z) - 미슬랭 친절해요. [리뷰 46] (2026-04-14T03:35:37.000Z) - 승리 예전에 리쥬란하고 너무 아파서 겁냈는데 리쥬란은 진짜 안 아파서 편하게 시술받았어요. 마취크림도 잘 발라주셔서 좋았어요. [리뷰 47] (2026-04-14T03:17:58.000Z) - jul**** 리팟레이저로 흑자제거 했어요. 진짜 2주만에 다 지워져서 동네방네 소문났네요.</span> <mark class="chunk-overlap overlap-out">[리뷰 48] (2026-04-14T02:47:54.000Z) - cru**** 얼굴 리프팅으로 유명한 곳에서 시술하고 효과 전혀 없었는데 여기서 일년전에 300샷하고 너무 효과 좋아서 다시 왔어요.</mark></article>
+      <article class="chunk-row review-row" data-chunk="14"><mark class="chunk-overlap overlap-in">[리뷰 48] (2026-04-14T02:47:54.000Z) - cru**** 얼굴 리프팅으로 유명한 곳에서 시술하고 효과 전혀 없었는데 여기서 일년전에 300샷하고 너무 효과 좋아서 다시 왔어요.</mark> <span>손기술이 다른 것 같아요. 오늘도 잘 받고 갑니다. [리뷰 49] (2026-04-14T02:22:42.000Z) - lees**** 상담 받고 꾸준히 관리해서 얼굴 많이 깨끗해졌어요. 주변에 소개 많이 했어요. [리뷰 50] (2026-04-13T08:27:36.000Z) - 물처럼 바람처럼 20년 묵은 흑자 제거하러 방문했어요. 진작 할 걸 그랬나봐요. 화장으로는 개선이 안되는데 한번에 케어가 된다니 미라클입니다. 모두 친절하고 예쁘시고 원장님이 코디없이 직접 상담과 시술을 해주시니 믿음이 가네요. [리뷰 51] (2026-04-13T05:27:51.000Z) - j11111 눈에 몽고반점처럼 큰 점이 어릴 때부터 있었는데 평생 못 뺄 줄 알았는데 여기서 제거했습니다. 다른 병원에서는 눈 근처라 위험하니 그냥 살아라, 제거는 가능하지만 흉이 안 날 거다 하셨는데 눈은 살아있고 점만 깨끗하게 사라졌습니다. 너무 좋아요.</span> <mark class="chunk-overlap overlap-out">[리뷰 52] (2026-04-13T04:24:15.000Z) - gui**** 옆구리 라인 아큐주사 맞고 효과 좋아서 2차 시술왔어요. 더 날씬해지길.</mark></article>
+      <article class="chunk-row review-row" data-chunk="15"><mark class="chunk-overlap overlap-in">[리뷰 52] (2026-04-13T04:24:15.000Z) - gui**** 옆구리 라인 아큐주사 맞고 효과 좋아서 2차 시술왔어요. 더 날씬해지길.</mark> <span>[리뷰 53] (2026-04-13T04:23:46.000Z) - chen**** 오래된 색소가 흑자인줄 모르고 지내다가 친구가 소개해줘서 리팟했어요. 색소 떨어져서 신기해요. 오늘은 보톡스도 맞았어요. [리뷰 54] (2026-04-13T04:05:07.000Z) - byu**** 써마지 600샷 받았어요. 마취 꼼꼼히 발라주시고 시술할 때 에너지 많이 넣어주시려고 모드 조절 해주시고 신경 많이 써주셔서 내년에도 오려구요. [리뷰 55] (2026-04-13T03:58:58.000Z) - 눈물맛 보톡스 시술도 원장님이 직접 디자인 봐주시고 필요한 부위만 설명해주셔서 믿고 받았습니다.</span></article>
+      <div class="load-more-wrap"><button type="button" class="load-more-button">더보기</button></div>
+    </section>
+  </main>
+</div>
+
+</div></div>
+<script src="icons.js"></script>
+<script defer src="demo.js?v=20260623-chatbot-merge"></script>
+</body>
+</html>

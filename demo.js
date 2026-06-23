@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  // 사용자 이용 시나리오: 테라스의원 매장 등록부터 AI 블로그 발행 요청까지
+  // 사용자 이용 시나리오: 테라스의원 매장 등록부터 AI 블로그 발행, 챗봇 RAG 설정까지
   var SCENARIO = [
     {
       page: 'soho_dashboard.html',
@@ -111,8 +111,67 @@
       page: '10_블로그_발행대기_상세.html',
       label: '발행 후 완료 처리',
       target: { selector: '.card-footer .btn-primary', text: '발행 완료 처리' },
-      guide: '블로그 포스팅 담당자가 실제 발행 수행 후 [발행 완료 처리] 합니다. (데모 시나리오 종료. 데모 홈으로 이동)',
-      next: 'index.html'
+      guide: '블로그 포스팅 담당자가 실제 발행 수행 후 [발행 완료 처리] 합니다. 이어서 같은 매장 정보로 챗봇 설정을 진행합니다.',
+      next: 'chatbot_rag_ready.html'
+    },
+    {
+      page: 'chatbot_rag_ready.html',
+      label: '챗봇용 RAG 문서 생성 준비',
+      target: { selector: '#rag-generate-button', text: '챗봇용 RAG 문서 생성' },
+      scrollTarget: true,
+      guide: '테라스의원 매장 등록과 콘텐츠 학습이 완료된 상태입니다. [챗봇용 RAG 문서 생성]을 눌러 챗봇 지식 문서를 만듭니다.',
+      next: 'chatbot_rag_generated.html'
+    },
+    {
+      page: 'chatbot_rag_generated.html',
+      label: 'RAG 문서 생성 결과',
+      target: { selector: '.rag-download-link', text: 'info_테라스의원.docx' },
+      scrollTarget: true,
+      guide: '챗봇용 RAG 문서 2개가 생성되었습니다. info 문서를 눌러 다운로드 완료 상태를 확인합니다.',
+      next: 'chatbot_rag_download_modal.html',
+      extraTargets: [
+        { target: { selector: '.rag-download-link', text: 'reviews_테라스의원.docx' }, next: 'chatbot_rag_download_modal.html' }
+      ]
+    },
+    {
+      page: 'chatbot_rag_download_modal.html',
+      label: '다운로드 완료',
+      target: { selector: '#download-confirm-button', text: '확인' },
+      guide: '다운로드 완료 팝업입니다. [확인]을 누르면 RB Dialog 지식 관리 목록으로 이동합니다.',
+      next: 'chatbot_knowledge_list.html'
+    },
+    {
+      page: 'chatbot_knowledge_list.html',
+      label: 'RB Dialog 지식 관리 목록',
+      target: { selector: '.knowledge-row', text: 'info_terrace' },
+      guide: 'RB Dialog 지식 관리 메뉴에 info_terrace와 review_terrace 문서가 등록되어 있습니다. info 문서를 눌러 벡터 임베딩 설정을 확인합니다.',
+      next: 'chatbot_info_embedding.html'
+    },
+    {
+      page: 'chatbot_info_embedding.html',
+      label: 'info 문서 벡터 임베딩 설정',
+      target: null,
+      guide: '업체 정보 문서가 청크 크기 500, 오버랩 100, 총 10개 청크로 임베딩되었습니다. 문서 내용과 오버랩 구성을 확인한 뒤 리뷰 문서 설정으로 이동합니다.',
+      guideCta: '리뷰파일 보러가기',
+      guidePosition: 'top-right',
+      next: 'chatbot_reviews_embedding.html'
+    },
+    {
+      page: 'chatbot_reviews_embedding.html',
+      label: 'reviews 문서 벡터 임베딩 설정',
+      target: null,
+      guide: '방문자 리뷰 문서가 청크 크기 800, 오버랩 200, 총 849개 기준으로 임베딩되었습니다. OCR 반영 청크와 더보기 구조를 확인한 뒤 실제 챗봇 화면으로 이동합니다.',
+      guideCta: '챗봇 구현 확인하기',
+      guidePosition: 'top-right',
+      next: 'chatbot_live.html'
+    },
+    {
+      page: 'chatbot_live.html',
+      label: '실제 챗봇 이용',
+      target: null,
+      guide: '실제 RB Dialog 챗봇입니다. 화면 안의 챗봇에서 테라스의원 관련 질문을 직접 확인할 수 있습니다.',
+      guidePosition: 'top-right',
+      next: null
     }
   ];
 
@@ -176,10 +235,15 @@
   stepLabel.innerHTML = '<strong>' + (stepIndex + 1) + '/' + SCENARIO.length + '</strong>' + step.label;
 
   var nextBtn = document.createElement('a');
-  nextBtn.className = 'demo-nav-btn';
-  nextBtn.href = step.next;
+  nextBtn.className = 'demo-nav-btn' + (!step.next ? ' disabled' : '');
+  nextBtn.href = step.next || '#';
   nextBtn.title = '다음 화면';
   nextBtn.textContent = '›';
+  nextBtn.addEventListener('click', function (event) {
+    if (!step.next) return;
+    event.preventDefault();
+    location.href = step.next;
+  });
 
   var toggle = document.createElement('button');
   toggle.type = 'button';
@@ -211,6 +275,14 @@
 
   function positionTooltip(el) {
     if (!tooltip) return;
+    if (step.guidePosition === 'top-right') {
+      tooltip.classList.add('top-right');
+      tooltip.classList.remove('below');
+      tooltip.style.top = '';
+      tooltip.style.left = '';
+      return;
+    }
+    if (!el) el = nextBtn;
     var rect = el.getBoundingClientRect();
     var top = rect.top + window.scrollY - tooltip.offsetHeight - 14;
     var below = false;
@@ -241,27 +313,37 @@
   }
 
   function applyHighlight(el) {
-    el.classList.add('demo-highlight');
+    if (el) el.classList.add('demo-highlight');
     tooltip = document.createElement('div');
     tooltip.className = 'demo-tooltip';
-    tooltip.innerHTML = '<span class="demo-tooltip-step">STEP ' + (stepIndex + 1) + '/' + SCENARIO.length + '</span>' + step.guide;
+    tooltip.innerHTML =
+      '<span class="demo-tooltip-step">STEP ' + (stepIndex + 1) + '/' + SCENARIO.length + '</span>' +
+      '<div class="demo-tooltip-body">' + step.guide + '</div>' +
+      (step.guideCta ? '<div class="demo-tooltip-actions"><button type="button" class="demo-tooltip-cta">' + step.guideCta + '</button></div>' : '');
     document.body.appendChild(tooltip);
+    var cta = tooltip.querySelector('.demo-tooltip-cta');
+    if (cta) {
+      cta.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (step.next) location.href = step.next;
+      });
+    }
     positionTooltip(el);
     window.addEventListener('resize', function () { positionTooltip(el); });
     window.addEventListener('scroll', function () { positionTooltip(el); }, true);
   }
 
   function removeHighlight(el) {
-    el.classList.remove('demo-highlight');
+    if (el) el.classList.remove('demo-highlight');
     if (tooltip) { tooltip.remove(); tooltip = null; }
   }
 
   function syncGuide(el) {
     var on = guideOn();
     toggle.classList.toggle('on', on);
-    if (!el) return;
     if (on) {
-      if (!el.classList.contains('demo-highlight')) applyHighlight(el);
+      if (!tooltip && (!el || !el.classList.contains('demo-highlight'))) applyHighlight(el);
     } else {
       removeHighlight(el);
     }
@@ -269,6 +351,9 @@
 
   var target = findTarget(step.target);
   wireNavigation(target, step.next);
+  if (step.scrollTarget && target) {
+    window.setTimeout(function () { target.scrollIntoView({ block: 'center' }); }, 80);
+  }
   if (step.extraTargets) {
     for (var j = 0; j < step.extraTargets.length; j++) {
       wireNavigation(findTarget(step.extraTargets[j].target), step.extraTargets[j].next);

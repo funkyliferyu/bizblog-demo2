@@ -6,6 +6,7 @@
   top: 10px;
   right: 12px;
   z-index: 9999;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -239,6 +240,7 @@ tr.demo-highlight,
 .demo-tooltip {
   position: absolute;
   z-index: 9998;
+  box-sizing: border-box;
   max-width: 280px;
   padding: 10px 14px;
   background: #b45309;
@@ -246,9 +248,22 @@ tr.demo-highlight,
   font-size: 13px;
   font-weight: 600;
   line-height: 1.45;
+  overflow-wrap: anywhere;
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(180, 83, 9, 0.4);
-  pointer-events: none;
+  pointer-events: auto;
+}
+
+.demo-tooltip.top-right {
+  position: fixed;
+  top: 62px;
+  right: 16px;
+  left: auto !important;
+  max-width: 340px;
+}
+
+.demo-tooltip.top-right::after {
+  display: none;
 }
 
 .demo-tooltip::after {
@@ -275,4 +290,75 @@ tr.demo-highlight,
   color: #fde68a;
   margin-bottom: 3px;
   letter-spacing: 0.04em;
+}
+
+.demo-tooltip-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.demo-tooltip-cta {
+  appearance: none;
+  border: 0;
+  border-radius: 6px;
+  background: #fff;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.demo-tooltip-cta:hover {
+  background: #fff7ed;
+}
+
+@media (max-width: 640px) {
+  .demo-bar {
+    left: 8px;
+    right: 8px;
+    display: grid;
+    grid-template-columns: 28px 28px minmax(0, 1fr) 28px 34px;
+    justify-content: stretch;
+    gap: 6px;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .demo-bar .demo-step-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0;
+  }
+
+  .demo-bar .demo-step-label strong {
+    font-size: 13px;
+  }
+
+  .demo-toggle {
+    width: 34px;
+    height: 28px;
+    justify-content: center;
+    padding: 8px;
+    font-size: 0;
+  }
+
+  .demo-tooltip.top-right {
+    left: 12px !important;
+    right: 12px;
+    top: 68px;
+    max-width: none;
+  }
+
+  .demo-tooltip-actions {
+    justify-content: flex-start;
+  }
+
+  .demo-tooltip-cta {
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+  }
 }

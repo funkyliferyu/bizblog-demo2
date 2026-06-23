@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RB Dialog 지식 관리 목록 · 비즈플래닛 마케팅 채널관리 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="root"><div class="screen-html chatbot-screen-html"><style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#f3f5f8;color:#2d3340;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;font-size:14px}
+  .knowledge-topbar{height:52px;background:#302e43;color:#fff;display:flex;align-items:center;padding:0 24px;gap:28px}
+  .rb-logo{font-size:19px;font-weight:900;letter-spacing:-.03em}.rb-logo span{font-size:14px;margin-left:1px}
+  .tenant{font-size:13px;color:#d8dbe7}.tenant span{color:#9da3b6;margin:0 8px}.tenant b{color:#fff}.caret{font-size:10px}
+  .top-actions{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:#e5e7ef}.avatar{width:18px;height:18px;border-radius:50%;background:#8f95a3;display:inline-block}
+  .knowledge-nav{height:51px;background:#fff;border-bottom:1px solid #e4e8f1;display:flex;align-items:center;padding:0 24px;gap:0;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .knowledge-nav a{height:51px;display:flex;align-items:center;padding:0 14px;color:#262b36;text-decoration:none;font-size:14px;font-weight:700;white-space:nowrap;border-bottom:3px solid transparent}
+  .knowledge-nav a.active{color:#3468f6;border-bottom-color:#3468f6}.knowledge-nav em{font-style:normal;font-size:9px;color:#fff;background:#ff6262;border-radius:999px;padding:1px 4px;margin-left:4px}
+  .nav-spacer{flex:1}
+  .list-main{padding:52px 56px 80px}.list-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+  h1{font-size:29px;line-height:1.2;margin:0;font-weight:850;color:#262b36}
+  .register-button{height:48px;border:0;background:#3468f6;color:#fff;padding:0 24px;font-size:17px;font-weight:900}
+  .list-panel{background:#fff;border:1px solid #e1e5ec;min-height:310px;padding:26px 36px 36px}
+  .search-row{display:grid;grid-template-columns:1fr 354px;align-items:center;margin-bottom:14px}
+  .search-box{height:40px;background:#f0f2f5;color:#b0b4bd;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:15px}
+  .search-box span{font-size:27px;color:#1d222b;line-height:1}
+  .knowledge-table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{height:41px;border-top:1px solid #e7e9ef;text-align:left;padding:0 36px;color:#1f2733}
+  th{color:#b0b4bd;font-size:12px;font-weight:900}
+  td:nth-child(1),th:nth-child(1){width:54%}td:nth-child(3),th:nth-child(3){text-align:center}
+  .knowledge-row{cursor:pointer}.knowledge-row:hover{background:#f7f9ff}
+  .pager{width:30px;height:32px;background:#3468f6;color:#fff;display:flex;align-items:center;justify-content:center;margin:36px auto 0;font-weight:800}
+  @media(max-width:900px){.knowledge-nav{overflow:auto}.list-main{padding:28px 18px}.list-top{align-items:flex-start;gap:12px}.list-panel{padding:18px;overflow:auto}.search-row{grid-template-columns:1fr}.knowledge-table{min-width:840px}}
+</style>
+
+<div class="knowledge-list-page">
+  <header class="knowledge-topbar">
+    <div class="rb-logo">rb<span>DIALOG</span></div>
+    <div class="tenant">soho-test <span>›</span> <b>테라스의원</b> <span class="caret">▼</span></div>
+    <div class="top-actions"><span>공지사항</span><span class="avatar"></span><span>류*근님</span></div>
+  </header>
+  <nav class="knowledge-nav">
+    <a>시나리오</a><a>인텐트</a><a>엔티티</a><a>봇 응답</a><a>API 관리</a><a>AI 에이전트 <em>PRO</em></a><a class="active">Knowledge 관리 <em>PRO</em></a><a>지식 Lab</a><a>봇 설정</a>
+    <span class="nav-spacer"></span><a>훈련</a><a>서비스 배포</a><a>검증</a><a>통계</a><a>테스트</a>
+  </nav>
+  <main class="list-main">
+    <div class="list-top">
+      <h1>Knowledge 관리</h1>
+      <button class="register-button" type="button">＋ 문서 등록</button>
+    </div>
+    <section class="list-panel">
+      <div class="search-row"><div></div><label class="search-box">검색어를 입력해주세요.<span>⌕</span></label></div>
+      <table class="knowledge-table">
+        <thead>
+          <tr><th>문서명</th><th>임베딩 변환</th><th>연결 에이전트</th><th>최종 수정일</th><th>최종 수정자</th></tr>
+        </thead>
+        <tbody>
+          <tr class="knowledge-row"><td>review_terrace</td><td>완료</td><td><u>1</u></td><td>2026.06.23 11:02</td><td>류*근</td></tr>
+          <tr class="knowledge-row"><td>info_terrace</td><td>완료</td><td><u>1</u></td><td>2026.06.23 10:32</td><td>류*근</td></tr>
+        </tbody>
+      </table>
+      <div class="pager">1</div>
+    </section>
+  </main>
+</div>
+
+</div></div>
+<script src="icons.js"></script>
+<script defer src="demo.js?v=20260623-chatbot-merge"></script>
+</body>
+</html>
