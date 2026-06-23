@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>자동생성 블로그 목록 조회 · 비즈플래닛 마케팅 채널관리 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="root"><div class="screen-html"><style>
+.blog-page-head{margin-bottom:20px}
+.auto-gen-settings{width:100%;background:#fff;border:1px solid #D8E0F0;border-radius:8px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;margin-bottom:16px}
+.auto-gen-summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 14px;cursor:pointer;list-style:none}
+.auto-gen-summary::-webkit-details-marker{display:none}
+.auto-gen-summary-main{display:flex;align-items:center;gap:10px;min-width:0;flex:1;flex-wrap:wrap}
+.auto-gen-update{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#9AA0B4;white-space:nowrap}
+.auto-gen-update strong{color:#6B7280;font-weight:700}
+.auto-gen-divider{width:1px;height:16px;background:#D8E0F0}
+.auto-gen-title-inline{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#1A1A2E;white-space:nowrap}
+.auto-gen-summary-chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.auto-gen-chip{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border:1px solid #E2E8F0;border-radius:999px;background:#F8FAFF;font-size:11px;color:#6B7280;white-space:nowrap}
+.auto-gen-chip strong{color:#1A1A2E;font-weight:700}
+.auto-gen-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#3B5BDB;white-space:nowrap}
+.auto-gen-toggle .toggle-open{display:none}
+.auto-gen-settings[open] .auto-gen-toggle .toggle-closed{display:none}
+.auto-gen-settings[open] .auto-gen-toggle .toggle-open{display:inline}
+.auto-gen-toggle .icon-chevron-down{transition:transform .18s ease}
+.auto-gen-settings[open] .auto-gen-toggle .icon-chevron-down{transform:rotate(180deg)}
+.auto-gen-detail-panel{padding:12px 14px 14px;border-top:1px solid #EDF1F7;background:#fff}
+.auto-gen-settings:not([open]) .auto-gen-detail-panel{display:none}
+.auto-gen-detail-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.auto-gen-detail-title{font-size:12px;font-weight:700;color:#1A1A2E}
+.auto-gen-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.auto-gen-field label{display:block;font-size:10px;font-weight:700;color:#7B8499;margin-bottom:4px}
+.auto-gen-field select,.auto-gen-field input{width:100%;height:30px}
+.auto-gen-next{font-size:11px;color:#7B8499;margin-top:8px}
+.auto-gen-next strong{color:#1A1A2E;font-weight:700}
+.auto-gen-radio{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.auto-gen-option{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#4A5568;line-height:1.45;border:1px solid #EDF1F7;border-radius:6px;padding:8px 9px;background:#FAFBFC}
+.auto-gen-option input{width:14px;height:14px;min-width:14px;margin-top:2px;accent-color:#3B5BDB;padding:0}
+.auto-gen-option strong{color:#1A1A2E;font-weight:700}
+.auto-gen-note{font-size:11px;color:#6B7280;line-height:1.5;margin-top:8px}
+@media(max-width:900px){
+  .auto-gen-summary{align-items:flex-start;flex-direction:column}
+  .auto-gen-divider{display:none}
+  .auto-gen-grid,.auto-gen-radio{grid-template-columns:1fr}
+}
+</style>
+
+
+<div class="topbar">
+  <div class="topbar-breadcrumb">마케팅 채널관리 &rsaquo; <span>블로그 관리</span></div>
+</div>
+<div class="main-content">
+  <div class="blog-page-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div class="page-title" style="margin-bottom:0">블로그 관리</div>
+  </div>
+
+  <!-- 승인 대기 alert (승인 대기 건 있을 때만 노출) -->
+  <div id="blog-pending-alert" style="background:#FFF4E6;border:1px solid #FFA94D;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8590C" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span id="blog-pending-count" style="font-size:13px;font-weight:600;color:#E8590C">블로그 글 10건 · 승인대기 8건 · 발행대기 2건</span>
+      <span style="font-size:12px;color:#E8590C;opacity:.8">AI가 생성한 콘텐츠를 검토하고 발행 요청해 주세요.</span>
+    </div>
+    <button class="btn btn-sm" id="blog-pending-action" style="background:#E8590C;color:#fff;border:none" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">지금 확인</button>
+  </div><!-- /approval-alert -->
+
+  <details class="auto-gen-settings" id="blogAutoGenerationSettings">
+    <summary class="auto-gen-summary">
+      <div class="auto-gen-summary-main">
+        <span class="auto-gen-update">
+          <span class="icon-refresh-cw" data-icon="refresh-cw" data-size="12" data-color="currentColor"></span>
+          최종 업데이트: <strong id="blog-auto-last-updated">2026.06.15</strong>
+        </span>
+        <span class="auto-gen-divider" aria-hidden="true"></span>
+        <span class="auto-gen-title-inline">
+          <span class="icon-settings" data-icon="settings" data-size="12" data-color="currentColor"></span>
+          자동 생성
+        </span>
+        <span class="auto-gen-summary-chips">
+          <span class="auto-gen-chip">주기 <strong>2주마다</strong></span>
+          <span class="auto-gen-chip">생성 <strong id="blog-auto-generate-count">2건</strong></span>
+          <span class="auto-gen-chip">다음 <strong id="blog-auto-next-run">2026.06.29</strong></span>
+          <span class="auto-gen-chip">발행 방식 <strong>승인 후 발행 요청</strong></span>
+          <span class="auto-gen-chip">알림 <strong>ON</strong></span>
+        </span>
+      </div>
+      <span class="auto-gen-toggle">
+        <span class="toggle-closed">상세 설정</span>
+        <span class="toggle-open">상세 설정 접기</span>
+        <span class="icon-chevron-down" data-icon="chevron-down" data-size="12" data-color="currentColor"></span>
+      </span>
+    </summary>
+    <div class="auto-gen-detail-panel">
+      <div class="auto-gen-detail-head">
+        <div class="auto-gen-detail-title">자동 생성 설정</div>
+        <span class="badge b-blue">블로그 운영</span>
+      </div>
+      <div class="auto-gen-grid">
+        <div class="auto-gen-field">
+          <label>자동 생성 주기</label>
+          <select>
+            <option>매주</option>
+            <option selected>2주마다</option>
+            <option>매월</option>
+          </select>
+        </div>
+        <div class="auto-gen-field">
+          <label>생성 개수</label>
+          <input id="blog-auto-generate-count-input" type="number" min="1" max="10" step="1" value="2" inputmode="numeric">
+        </div>
+        <div class="auto-gen-field">
+          <label>다음 생성 예정일</label>
+          <input id="blog-auto-next-run-input" value="2026.06.29" readonly>
+        </div>
+        <label class="auto-gen-option" style="margin:0">
+          <input type="checkbox" checked>
+          <span><strong>생성 완료 알림</strong><br>생성 완료 시 알림을 받습니다.</span>
+        </label>
+      </div>
+      <div class="auto-gen-radio" aria-label="발행 요청 방식">
+        <label class="auto-gen-option">
+          <input type="radio" name="blog_publish_mode" checked>
+          <span><strong>승인 후 발행 요청</strong><br>생성된 콘텐츠를 블로그 관리에서 검토한 뒤 발행 요청합니다.</span>
+        </label>
+        <label class="auto-gen-option">
+          <input type="radio" name="blog_publish_mode">
+          <span><strong>자동 발행 요청</strong><br>생성 즉시 발행 요청으로 넘기고 완료 알림을 받습니다.</span>
+        </label>
+      </div>
+      <div class="auto-gen-note">콘텐츠 생성과 발행 요청 방식은 블로그 관리에서 설정합니다.</div>
+    </div>
+  </details>
+
+  <div class="filter-bar">
+    <span class="f-label">작성주체</span>
+    <select style="width:120px">
+      <option>전체</option>
+      <option>AI 자동</option>
+      <option>직접등록</option>
+    </select>
+    <span class="f-label">발행상태</span>
+    <select style="width:120px">
+      <option>전체</option>
+      <option>발행완료</option>
+      <option>발행예약</option>
+      <option>승인대기</option>
+      <option>취소</option>
+    </select>
+    <span class="f-label">기간</span>
+    <select style="width:120px">
+      <option>전체</option>
+      <option>최근 1개월</option>
+      <option>최근 3개월</option>
+    </select>
+    <button class="btn btn-primary btn-sm">검색</button>
+    <button class="btn btn-ghost btn-sm">초기화</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl" style="table-layout:fixed">
+      <thead>
+        <tr>
+          <th style="width:auto">제목</th>
+          <th style="width:80px">작성주체</th>
+          <th style="width:88px">발행상태</th>
+          <th style="width:60px">조회수</th>
+          <th style="width:48px">댓글</th>
+          <th style="width:60px">SEO</th>
+          <th style="width:72px">발행일</th>
+        </tr>
+      </thead>
+      <tbody id="blog-post-list">
+        <tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            리팟레이저로 흑자 제거 효과없나요? 원인은 반복치료 때문입니다.
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">95점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            울쎄라 잘하는 병원, 효과 극대화 위한 필수 조건은?
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">91점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            일광흑자 치료의 원인과 접근법은?
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">93점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            울쎄라 가격, 선택 시 고려해야 할 1가지 사실은?
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">95점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            슈링크 효과와 개인 맞춤 관리의 중요성
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">95점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            울쎄라 가격, 선택할 때 고려해야 할 3가지 방법
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">93점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            슈링크 효과가 없다고 느끼시나요? 이유는 개인 차이에 따라 다릅니다.
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">95점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            테라스의원에서의 피부 개선 방법은 무엇일까요?
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-orange">승인대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">85점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            울쎄라 가격, 선택 전에 알아야 할 3가지 고려사항
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-yellow">발행대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">95점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+<tr style="cursor:pointer" data-flow-target="09_AI콘텐츠생성_상세.html" data-flow-label="다음: 콘텐츠 상세">
+          <td class="td-link" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            슈링크 효과는 무엇인가요? 개인 맞춤 관리가 필요한 이유
+            <span style="margin-left:4px" class="icon-external-link" data-icon="external-link" data-size="11" data-color="#9AA0B4"></span>
+          </td>
+          <td><span class="badge b-blue">AI 자동</span></td>
+          <td><span class="badge b-yellow">발행대기</span></td>
+          <td class="td-empty">—</td>
+          <td class="td-empty">—</td>
+          <td><span class="badge b-green" style="font-size:10px">95점</span></td>
+          <td class="td-empty">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button class="pg-btn disabled"><span class="icon-chevron-left" data-icon="chevron-left" data-size="12" data-color="currentColor"></span></button>
+    <button class="pg-btn active">1</button>
+    <button class="pg-btn">2</button>
+    <button class="pg-btn">3</button>
+    <button class="pg-btn"><span class="icon-chevron-right" data-icon="chevron-right" data-size="12" data-color="currentColor"></span></button>
+  </div>
+</div>
+<div id="blog-v2-batch-modal" class="modal-backdrop" style="display:none" role="status" aria-live="polite">
+  <div class="modal modal-sm">
+    <div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <span style="display:inline-flex;align-items:center;gap:8px">
+        <span class="spinner" id="blog-v2-batch-spinner" aria-hidden="true"></span>
+        생성 완료
+      </span>
+      <span id="blog-v2-batch-elapsed" style="font-size:11px;font-weight:700;color:#6B7280">00:00</span>
+    </div>
+    <div class="modal-desc" id="blog-v2-batch-modal-desc">포뮬라 기반 블로그 글 10건이 목록에 추가되었습니다. 학습 소스: 블로그 50개 · 플레이스 50개</div>
+    <div id="blog-v2-batch-steps" style="display:grid;gap:8px;margin-top:12px"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn btn-ghost btn-sm" id="blog-v2-batch-modal-close" type="button" style="display:none">확인</button>
+    </div>
+  </div>
+</div>
+
+</div></div>
+<script src="icons.js"></script>
+<script defer src="demo.js?v=20260617-guide-copy-2"></script>
+</body>
+</html>

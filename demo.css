@@ -1,0 +1,278 @@
+/* ===== 비즈챗 데모 레이어 ===== */
+
+/* 우상단 고정 데모 바 */
+.demo-bar {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(17, 24, 39, 0.92);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  font-family: inherit;
+  font-size: 13px;
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+
+.demo-bar .demo-step-label {
+  white-space: nowrap;
+  color: #d1d5db;
+  font-weight: 600;
+  padding: 0 2px;
+}
+
+.demo-bar .demo-step-label strong {
+  color: #6ee7b7;
+  margin-right: 6px;
+}
+
+.demo-bar button,
+.demo-bar a {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.demo-toggle {
+  padding: 8px 14px;
+  background: #374151;
+  color: #fff;
+  transition: background 0.15s ease;
+}
+
+.demo-toggle .demo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+
+.demo-toggle.on {
+  background: #059669;
+}
+
+.demo-toggle.on .demo-dot {
+  background: #a7f3d0;
+  box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.25);
+}
+
+.demo-nav-btn {
+  width: 28px;
+  height: 28px;
+  justify-content: center;
+  background: #374151;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.demo-nav-btn:hover { background: #4b5563; }
+.demo-nav-btn.disabled { opacity: 0.35; pointer-events: none; }
+
+.demo-home-btn {
+  width: 28px;
+  height: 28px;
+  justify-content: center;
+  background: #1f2937;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.demo-home-btn:hover { color: #fff; }
+
+/* ===== 여름맞이 캠페인 비주얼 (대시보드 AI 제안) ===== */
+.summer-proposal {
+  background:
+    radial-gradient(circle at 82% 22%, rgba(255, 224, 130, 0.55), transparent 32%),
+    linear-gradient(180deg, #2c8fd4 0%, #54bbe4 52%, #8fe0da 100%);
+}
+
+.summer-sun {
+  position: absolute;
+  right: 38px;
+  top: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #ffe9a8, #ffd54f 58%, #ffb840);
+  box-shadow: 0 0 22px 10px rgba(255, 213, 79, 0.45);
+  z-index: 1;
+}
+
+.summer-cloud {
+  position: absolute;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  z-index: 1;
+}
+
+.summer-cloud::before {
+  content: '';
+  position: absolute;
+  left: 22%;
+  top: -7px;
+  width: 45%;
+  height: 12px;
+  border-radius: 999px 999px 0 0;
+  background: inherit;
+}
+
+.cloud-a { left: 52px; top: 30px; width: 58px; opacity: 0.95; }
+.cloud-b { left: 168px; top: 18px; width: 42px; opacity: 0.75; transform: scale(0.85); }
+
+.summer-bird {
+  position: absolute;
+  width: 14px;
+  height: 7px;
+  z-index: 1;
+}
+
+.summer-bird::before,
+.summer-bird::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 7px;
+  border: 2px solid rgba(20, 60, 90, 0.65);
+  border-bottom: 0;
+  border-left: 0;
+  border-radius: 0 7px 0 0;
+  transform: skewX(-8deg);
+}
+
+.summer-bird::after { left: 6px; transform: scaleX(-1) skewX(-8deg); }
+.bird-a { left: 246px; top: 34px; }
+.bird-b { left: 270px; top: 24px; transform: scale(0.75); }
+
+.summer-wave {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  border-radius: 100% 100% 0 0;
+  z-index: 1;
+}
+
+.wave-back {
+  bottom: -10px;
+  height: 42px;
+  background:
+    radial-gradient(ellipse at 14% 0%, rgba(255, 255, 255, 0.35) 0 3px, transparent 4px),
+    radial-gradient(ellipse at 52% 6%, rgba(255, 255, 255, 0.3) 0 3px, transparent 4px),
+    linear-gradient(180deg, #2587c2, #1c6da6);
+  opacity: 0.85;
+}
+
+.wave-front {
+  bottom: -16px;
+  height: 34px;
+  background:
+    radial-gradient(ellipse at 30% 4%, rgba(255, 255, 255, 0.5) 0 3px, transparent 4px),
+    radial-gradient(ellipse at 72% 8%, rgba(255, 255, 255, 0.42) 0 3px, transparent 4px),
+    linear-gradient(180deg, #3ba6dd, #2587c2);
+}
+
+.summer-umbrella {
+  position: absolute;
+  left: 96px;
+  bottom: 18px;
+  width: 52px;
+  height: 26px;
+  border-radius: 52px 52px 0 0;
+  background: repeating-linear-gradient(90deg, #ff6f61 0 9px, #fff3e0 9px 18px);
+  box-shadow: 0 2px 6px rgba(19, 35, 58, 0.25);
+  transform: rotate(-10deg);
+  z-index: 2;
+}
+
+.summer-umbrella::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  width: 3px;
+  height: 26px;
+  border-radius: 2px;
+  background: #8d6e63;
+  transform: rotate(4deg);
+}
+
+/* 클릭 대상 하이라이트 */
+.demo-highlight {
+  position: relative;
+  z-index: 9997;
+  outline: 3px solid #f59e0b !important;
+  outline-offset: 3px;
+  border-radius: 10px;
+  animation: demo-pulse 1.6s ease-in-out infinite;
+  cursor: pointer !important;
+}
+
+tr.demo-highlight,
+.tbl tr.demo-highlight {
+  z-index: 9997;
+  outline-offset: -3px;
+  border-radius: 0;
+  animation: none;
+  box-shadow: inset 0 0 0 3px #f59e0b, 0 0 0 4px rgba(245, 158, 11, 0.18);
+}
+
+@keyframes demo-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55); }
+  50% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+}
+
+/* 말풍선 안내 */
+.demo-tooltip {
+  position: absolute;
+  z-index: 9998;
+  max-width: 280px;
+  padding: 10px 14px;
+  background: #b45309;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(180, 83, 9, 0.4);
+  pointer-events: none;
+}
+
+.demo-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  bottom: -6px;
+  border: 6px solid transparent;
+  border-top-color: #b45309;
+  border-bottom: 0;
+}
+
+.demo-tooltip.below::after {
+  bottom: auto;
+  top: -6px;
+  border-top: 0;
+  border-bottom: 6px solid #b45309;
+}
+
+.demo-tooltip .demo-tooltip-step {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fde68a;
+  margin-bottom: 3px;
+  letter-spacing: 0.04em;
+}

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>분석 콘텐츠 선택 · 비즈플래닛 마케팅 채널관리 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="root"><div class="screen-html"><style>
+.check-cell{width:32px;text-align:center}
+.fake-check{width:14px;height:14px;border-radius:3px;border:1.5px solid #E2E8F0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;vertical-align:middle}
+.fake-check.on{background:#3B5BDB;border-color:#3B5BDB}
+.ai-suspect{font-size:10px;padding:1px 6px;border-radius:10px;background:#F7F8FA;color:#9AA0B4;border:1px solid #E2E8F0;margin-left:4px}
+tr.unchecked td{color:#9AA0B4}
+.selection-empty{padding:14px 12px;font-size:12px;color:#9AA0B4}
+.selection-place-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EEF1F6}
+.selection-place-row:last-child{border-bottom:0}
+.selection-place-title{flex:1;min-width:0;font-size:12px;color:#252733;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.selection-meta{font-size:11px;color:#9AA0B4}
+.selection-title-main{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.selection-evidence{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.evidence-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid #E2E8F0;border-radius:999px;background:#F8FAFC;color:#6B7280;font-size:10px;line-height:1.4}
+.evidence-badge strong{color:#3B5BDB}
+.analysis-progress{display:none;margin-bottom:16px}
+.analysis-progress.active{display:block}
+.analysis-step-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.analysis-step{border:1px solid #E2E8F0;border-radius:8px;background:#fff;padding:10px 12px;min-height:68px}
+.analysis-step-label{font-size:12px;font-weight:700;color:#1A1A2E;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.analysis-step-state{font-size:11px;color:#9AA0B4}
+.analysis-step.active{border-color:#3B5BDB;background:#EEF2FF}
+.analysis-step.active .analysis-step-state{color:#3B5BDB;font-weight:700}
+.analysis-step.done{border-color:#8CE99A;background:#EBFBEE}
+.analysis-step.done .analysis-step-state{color:#2F9E44;font-weight:700}
+.analysis-progress-error{display:none;margin-top:10px;font-size:12px;color:#C92A2A}
+.analysis-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(17,24,39,.48);z-index:2000;padding:24px}
+.analysis-overlay.active{display:flex}
+.analysis-overlay-panel{width:min(560px,calc(100vw - 48px));border-radius:8px;background:#fff;border:1px solid #E2E8F0;box-shadow:0 18px 48px rgba(17,24,39,.2);padding:24px;text-align:center}
+.analysis-overlay-spinner{width:34px;height:34px;border:3px solid #DCE3F8;border-top-color:#3B5BDB;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.analysis-overlay-title{font-size:18px;font-weight:800;color:#1A1A2E;margin-bottom:8px}
+.analysis-overlay-desc{font-size:13px;line-height:1.65;color:#4A5568;margin-bottom:14px}
+.analysis-overlay-meta{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.analysis-overlay-status{font-size:12px;font-weight:700;color:#3B5BDB;background:#EEF2FF;border:1px solid #DCE3F8;border-radius:999px;padding:7px 10px;display:inline-flex}
+.analysis-overlay-elapsed{font-size:12px;font-weight:700;color:#4A5568;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:999px;padding:7px 10px;display:inline-flex}
+.analysis-overlay-provider{display:none;font-size:12px;font-weight:700;color:#364152;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:999px;padding:7px 10px}
+.analysis-overlay-budget-note{display:none;font-size:12px;line-height:1.5;color:#6B7280;margin:-4px 0 14px}
+.analysis-overlay-flow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;text-align:left}
+.analysis-overlay-step{border:1px solid #E2E8F0;border-radius:8px;background:#fff;padding:9px 10px;min-width:0}
+.analysis-overlay-step-label{font-size:12px;font-weight:700;color:#1A1A2E;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.analysis-overlay-step-state{font-size:11px;color:#9AA0B4;line-height:1.5}
+.analysis-overlay-step.active{border-color:#3B5BDB;background:#F5F7FF}
+.analysis-overlay-step.active .analysis-overlay-step-state{color:#3B5BDB;font-weight:700}
+.analysis-overlay-step.done{border-color:#8CE99A;background:#F4FFF6}
+.analysis-overlay-step.done .analysis-overlay-step-state{color:#2F9E44;font-weight:700}
+@media (max-width:1100px){.analysis-step-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.analysis-overlay-flow{grid-template-columns:1fr}}
+</style>
+
+
+<div class="analysis-overlay" id="selection-analysis-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="selection-analysis-overlay-title" aria-describedby="selection-analysis-overlay-desc">
+  <div class="analysis-overlay-panel">
+    <div class="analysis-overlay-spinner" aria-hidden="true"></div>
+    <div class="analysis-overlay-title" id="selection-analysis-overlay-title">AI 분석을 실행하고 있습니다</div>
+    <div class="analysis-overlay-desc" id="selection-analysis-overlay-desc">선택한 콘텐츠를 분석하고 룰셋을 생성하는 중입니다. 시간이 걸릴 수 있습니다. 실제 AI 응답 구간은 수십 초 이상 이어질 수 있습니다. 이 화면을 유지하면 완료 후 학습 현황 화면으로 자동 이동합니다. 잠시만 기다려주세요.</div>
+    <div class="analysis-overlay-meta">
+      <div class="analysis-overlay-status" id="selection-analysis-overlay-status">분석 실행 준비 중</div>
+      <div class="analysis-overlay-elapsed" id="selection-analysis-overlay-elapsed">경과 00:00</div>
+      <div class="analysis-overlay-provider" id="selection-analysis-provider"></div>
+    </div>
+    <div class="analysis-overlay-budget-note" id="selection-analysis-budget-note"></div>
+    <div class="analysis-overlay-flow" id="selection-analysis-overlay-flow">
+      <div class="analysis-overlay-step" data-analysis-overlay-step="queued">
+        <div class="analysis-overlay-step-label">콘텐츠 확정</div>
+        <div class="analysis-overlay-step-state">대기</div>
+      </div>
+      <div class="analysis-overlay-step" data-analysis-overlay-step="analyzing">
+        <div class="analysis-overlay-step-label">AI 분석</div>
+        <div class="analysis-overlay-step-state">대기</div>
+      </div>
+      <div class="analysis-overlay-step" data-analysis-overlay-step="validating">
+        <div class="analysis-overlay-step-label">결과 검증</div>
+        <div class="analysis-overlay-step-state">대기</div>
+      </div>
+      <div class="analysis-overlay-step" data-analysis-overlay-step="snapshot">
+        <div class="analysis-overlay-step-label">학습 스냅샷 저장</div>
+        <div class="analysis-overlay-step-state">대기</div>
+      </div>
+      <div class="analysis-overlay-step" data-analysis-overlay-step="ruleset">
+        <div class="analysis-overlay-step-label">룰셋 생성</div>
+        <div class="analysis-overlay-step-state">대기</div>
+      </div>
+      <div class="analysis-overlay-step" data-analysis-overlay-step="navigate">
+        <div class="analysis-overlay-step-label">학습 현황 이동</div>
+        <div class="analysis-overlay-step-state">대기</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="topbar">
+  <div class="topbar-breadcrumb">마케팅 채널관리 &rsaquo; AI 학습 &rsaquo; <span>분석 콘텐츠 선택</span></div>
+</div>
+<div class="main-content">
+  <div class="page-title">수집 완료 — 분석할 콘텐츠 선택</div>
+  <div style="font-size:13px;color:#4A5568;margin-bottom:16px">수집된 콘텐츠 중 분석에 포함할 항목을 선택하세요.</div>
+
+  <div class="err-banner warning" style="margin-bottom:16px">
+    <div class="err-title"><span class="icon-alert-triangle" data-icon="alert-triangle" data-size="14" data-color="currentColor"></span> AI 작성 의심 콘텐츠 안내</div>
+    <div class="err-desc">AI가 작성한 글을 분석에 포함하면 룰셋이 왜곡될 수 있습니다. 'AI 작성 의심' 표시된 항목은 기본적으로 체크 해제되어 있습니다. 직접 작성하거나 직접 발행한 글만 선택하는 것을 권장합니다.</div>
+  </div>
+
+  <div class="card analysis-progress" id="selection-analysis-progress" aria-live="polite">
+    <div class="card-header">분석 실행 진행</div>
+    <div class="card-body">
+      <div class="analysis-step-list">
+        <div class="analysis-step" data-analysis-step="ready">
+          <div class="analysis-step-label">분석 실행 준비</div>
+          <div class="analysis-step-state">대기</div>
+        </div>
+        <div class="analysis-step" data-analysis-step="queued">
+          <div class="analysis-step-label">콘텐츠 확정</div>
+          <div class="analysis-step-state">대기</div>
+        </div>
+        <div class="analysis-step" data-analysis-step="started">
+          <div class="analysis-step-label">AI 분석</div>
+          <div class="analysis-step-state">대기</div>
+        </div>
+        <div class="analysis-step" data-analysis-step="ruleset">
+          <div class="analysis-step-label">룰셋 생성</div>
+          <div class="analysis-step-state">대기</div>
+        </div>
+        <div class="analysis-step" data-analysis-step="navigate">
+          <div class="analysis-step-label">학습 현황 이동</div>
+          <div class="analysis-step-state">대기</div>
+        </div>
+      </div>
+      <div class="analysis-progress-error" id="selection-analysis-error"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <span style="display:flex;align-items:center;gap:6px"><span class="icon-rss" data-icon="rss" data-size="14" data-color="#03C75A"></span> 네이버 블로그 <span id="selection-blog-count" style="font-size:11px;color:#9AA0B4;font-weight:400">· 50개 선택</span></span>
+      <button class="btn btn-ghost btn-sm" id="selection-blog-raw-button" disabled data-raw-url-template="collection_raw_data.html?runId=">RAW data 보기</button>
+    </div>
+    <div class="card-body" style="padding:0">
+      <table class="tbl" style="table-layout:fixed">
+        <thead>
+          <tr>
+            <th class="check-cell">
+              <div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            </th>
+            <th style="width:auto">제목</th>
+            <th style="width:64px">발행일</th>
+            <th style="width:60px">조회수</th>
+          </tr>
+        </thead>
+        <tbody id="selection-blog-list"><tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">서대문리투오, 아무데서나 받으면 안 되는 이유 &lt;리투오 시술의 핵심&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문써마지, 볼패임 없이 효과를 극대화하는 방법은 따로 있습니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문리팟, 흑자 제거 성공하고 싶다면 필독하세요 &lt;리팟레이저의 진실&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">리팟재발, 흑자제거 후 또 다시 올라오셨나요? &lt;원인부터 핵심 치료법까지&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문피부과 리투오, 효과를 제대로 느끼고 싶다면? &lt;결과 차이의 핵심&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">동대문역피부과, 사람마다 리팟레이저 결과가 다른 이유 &lt;흑자제거의 진실&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">흑자전문피부과, 고르기 전 이 글만 읽으면 실패 안 합니다 &lt;테라스의원&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">용산역피부과, 흑자제거 성공의 비결은 따로 있습니다&lt;리팟레이저 시술 필독서&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">청량리피부과추천, 리팟레이저가 있다고 흑자 치료가 성공하는 건 아닙니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">청량리역피부과 방문 전, 흑자제거 실패의 진짜 원인부터 확인하세요</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">신당동피부과 리팟레이저 상담받기 전, 꼭 알아야 할 것들 총정리 &lt;테라스의원&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">행당동피부과, 흑자제거에 대한 흔한 오해 3가지 알고 치료받으셔야 합니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">삼각지피부과 리팟레이저 결과는 누가 어떻게 하느냐에서 갈립니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">이촌피부과, 재발 없는 흑자치료를 원한다면 &amp;lsquo;이것&amp;rsquo;부터 확인하셔야합니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">경복궁역피부과, 같은 리팟레이저라고 무조건 효과가 보장되는 건 아닙니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">마포써마지, 같은 샷수라도 결과가 천지차이인 이유가 있습니다 &lt;테라스의원&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">서대문역피부과, 흑자 치료가 반복되는 이유는 따로 있습니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">종로구피부과 아무데서나 리팟레이저 받으면 큰일납니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문역피부과, 재발 없이 흑자제거하려면 꼭 알아야 할 것</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">시청근처피부과, 재발 없이 흑자치료를 하고 싶다면 꼭 읽어보세요. &lt;필독&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문역써마지, 볼 꺼짐을 막는 게 핵심입니다 &lt;테라스의원&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">동대문피부과, 애매하게 진한 흑자가 더 어려운 이유</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">홍제피부과 흑자제거, &amp;lsquo;언제 치료하느냐&amp;rsquo;가 결과를 좌우합니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">을지로흑자제거, 한 번에 끝이라는 말만 믿으면 안 되는 이유</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">신촌리팟레이저, 눈으로 보고 치료를 끝내면 무조건 다시 올라옵니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">은평피부과, 흑자제거 병원 선택 시 처음이 중요한 이유</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">마포리팟레이저, 흑자 피부진단기로 제거되었는지 확실하게 확인하는 피부과로 가세요</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">은평피부과, 사람마다 맞는 병원이 따로 있습니다 &lt;테라스의원&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">서대문역써마지 잘못 받으면 볼륨 다 꺼집니다. &lt;테라스의원 권유정 원장&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">마포리팟레이저, 병원 선택 전에 꼭 체크할 5가지 &lt;테라스의원 원장&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">공덕역피부과, 공장형에서는 흑자제거가 어려운 이유 &amp;ndash; 테라스의원 권유정 원장</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">을지로피부과 잘못 선택하면, 흑자제거 실패하는 이유 &lt;테라스의원 원장 작성&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">서대문피부과 리팟레이저 병원 선택이 중요한 이유</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문필러, 부자연스러운 결과를 만드는 차이는 &amp;lsquo;이것&amp;rsquo;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">공덕역리팟, 병원마다 흑자치료 결과가 다른 이유 &lt;테라스의원 원장&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">마포리쥬란 효과 &amp;lsquo;이것&amp;rsquo;으로 달라집니다&lt;테라스의원 원장&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">홍대리팟레이저 치료가 끝났다고 믿으면 큰일납니다 &lt;테라스의원 원장&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">은평 써마지 같은 시술인데 결과가 다른 이유는 이겁니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">홍제역피부과, 치료가 어려운 흑자 환자들이 멀리서도 찾아오는 이유</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문역울쎄라 이렇게 시술해야 후회 없습니다. &lt;현직 의사 작성&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">광화문역피부과 섬세함의 차이가 흑자 치료의 결과를 좌우합니다</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">서대문 써마지 소개가 이어지는 이유는 바로 이겁니다.</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">서대문리팟레이저병원, 이것만 알면 흑자 재발을 피할 수 있습니다. &lt;테라스의원 대표 원장 작성&gt;</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">20대 vs 30대 vs 40대, 정확한 연령대별 피부 관리법을 아시나요?</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">리팟레이저 흑자 제거 한번에 하는 방법 [리팟 공식 인증 피부과]</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">인모드FX부작용 없이 받기 위해 꼭 확인해야 조건은?</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">울쎄라잘하는병원, 현직 의료진이 생각하는 필수 조건은?</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">울쎄라600샷가격, 그보다 먼저 확인해야 하는 1가지? [울쎄라 정품 인증 피부과]</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">일광흑자 치료에 관한 현직 의료진의 단상 [광화문피부과]</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr>
+<tr><td><div class="fake-check on" style="margin:0 auto"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></td><td class="td-link"><div class="selection-title-main">슈링크 효과 없음? 원인은 &#39;OO&#39;때문입니다.</div><div class="selection-evidence"><span class="evidence-badge"><strong>post</strong></span><span class="evidence-badge">collected</span></div></td><td>06.16</td><td>—</td></tr></tbody>
+      </table>
+      <div id="selection-blog-visible-count" style="padding:10px 12px;font-size:11px;color:#9AA0B4">50 / 50개 표시</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span style="display:flex;align-items:center;gap:6px"><span class="icon-map-pin" data-icon="map-pin" data-size="14" data-color="#03C75A"></span> 네이버 플레이스 <span id="selection-place-count" style="font-size:11px;color:#9AA0B4;font-weight:400">· 리뷰 50개 선택</span></span>
+    </div>
+    <div class="card-body" id="selection-place-list">
+      <div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 곰냥이49<div class="selection-meta">예전부터 신경쓰이던 짙은 기미같은게 있어서 없애고 싶어서 방문했는데 흑자라고 진단해주시더라구요 ㅠㅠㅋㅋㅋ 그래서 리팟레이저 추천해주셔서 받았는데 진짜 거짓말처럼 깨끗하게 없어져서 넘 만족했습니다!ㅎㅎ 이제 꾸준히 다</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - Jorah<div class="selection-meta">미루고 미뤄두었던 흑자제거를 했습니다. 크기에 따라서 비용이 만만치 않았지만, 레이저시술후 2주만에 상처밴드 제거시 흑자부분이 정말 거짓말처럼 제거가 되었습니다. 다시 주 듀오덤을 붙이고 관리하면 재생이 될것 같습니</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - sun****<div class="selection-meta">써마지600샷시술~~ 아플까봐긴장엄청했는데~생각보다참을만했어요~~원장샘이잘받았다고~~기대되네요~내년에또받을생각있어요~</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 지으으으으<div class="selection-meta">스티커처럼 점이 떼어져서 신기신기! 모두 친절하세요</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - k555****<div class="selection-meta">최고에요^^</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 우슬15<div class="selection-meta">임신 출산 후에 걷잡을수 생겨버린 흑자 ㅜㅜ 고민고민하다 테라스의원에서 흑자 제거 했어요. 요 놈들만 없어도 살것 같았는데 잘 뽑아져 나온거 보니 신기하고 기분 좋네요^^</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - wjd****<div class="selection-meta">흑자제거 잘 되었어요~ 오랜 고민이 해결 되었습니다^^</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 이슬비8<div class="selection-meta">흑자제거 하러 검색많이하고 찾아왔는데 너무너무 잘빠졌어요! 원장님이랑 간호사님들도 너무 친절하시고 세심하셔요ㅜㅜ 직접 상담해주시는거도 정말 좋았습니당!</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - Esther7873<div class="selection-meta">좋은 후기가 많아 이곳을 왔는데 좋은 선택이었던 것 같아요. 의사 선생님께서 꼼꼼하시고 환자 입장에 서계시면서도, 나중에 관리 잘 못하여 속상한 일 생길까봐 세심하고 친절하게 관리방법 당부 주셔서 조심할 수 있도록 </div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 은주96<div class="selection-meta">시술 잘 되었고 의사 선생님이 친절하고 꼼꼼하게 봐 주시네요!</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 벌꿀양이<div class="selection-meta">깨끗하게 흑자가 제거되었어요! 깨끗한 피부에 자신감 뿜뿜^^ 다들 너무 친절하시고 감사합니다.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 럭키맘48<div class="selection-meta">평소 강남권 피부과를 다녔는데 늘 실장 상담만 길고 의사는 잠깐 보는 게 불만이었어요. 테라스 의원은 원장님이 직접 처음부터 끝까지 상담하고 꼼꼼하게 설명해 주셔서 신뢰감이 최고입니다! ​아들이 먼저 시술받고 효과가</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - woo****<div class="selection-meta">드디어 숙원사업 해결했어요❤️ 눈가에 있던 흑자 오늘 다 뽑아버렸어요😆 뗄 때 한 방에 슥 빠지는데 얼마나 속이 시원하던지... 그동안 이것 때문에 좀 얼굴이 어두워보이는 것 같아 신경 쓰였는데 너무 홀가분해요 친</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - Friendship43<div class="selection-meta">이전에 흑자 제거하러 왔다가 2주 지나고 방문해서 드디어 재생테이프 띠어냈는데 흑자가 말끔히 사라져서 너무 뿌듯하네요~!! 흑자제거는 테라스의원이 짱입니다!!</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - mi****<div class="selection-meta">흑자 레이저 제거 너무 깨끗하게 잘해주셨어요~ ^^ 친절하시고 병원도 쾌적하고 너무 만족했습니다.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - aud****<div class="selection-meta">아이낳고 눈가에 생긴 흑자가 6년에 걸쳐 계속 커져서 스트레스 받다가 블로그 검색 및 후기 찾아보고 병원 방문했어요~ 2주 전에 리팟 시술받은 3군데 흑자가 신기하게도 깨끗하게 제거되었습니다~ 추후관리까지 친절하게 </div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 카리스마린<div class="selection-meta">딸추천으로 흑자제거 하러 왔는데 병원이 전체적으로 깔끔하고 선생님이 매우 친절했습니다. 흑자 잘 제거되면 좋겠네요</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 규울52<div class="selection-meta">예약 친절하게 응대해주시고 바로 방문할 수 있었습니다. 원장 선생님도 매우 친절하게 잘 진료해주셨습니다.👍👍👍</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 엔젤로즈<div class="selection-meta">흑자가 깔끔하게 제거가 됐어요. 신기해요~~</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 물처럼 바람처럼<div class="selection-meta">우와 거짓말처럼 흑자가 쏘옥 빠졌어요 완전 언빌리버블입니다 십수년 애증의 대상이었던 흑자가 이렇게 없이질수 있다는것에 큰박수를~ 감사합니다 쌤들 넘 친절하셔서 위로받고갑니다~^^</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 비비빅35<div class="selection-meta">주변 지인이 흑자 제거하거 추천해줘서 그동안 고민만 하던 흑자 큰맘먹구 제거하려고 방문했는데 깨끗하게 잘 됐습니다! 원장님께서 엄청 친절하고 자세하게 설명 및 시술해 주신 점이 넘 좋았습니다 ☺️ 그동안 가 본 피부</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 요구르트8093<div class="selection-meta">동남아 16년차라 흑자가 많이 생겼네요. 여의사 선생님께서 편안하게 진료 봐주셨고, 4개가 있었는데. 타병원에서 이런류의 시술이 한번에 제거가 안됐다는 리뷰가 있어서 혹시나 이번에 2개만 했어요. 오늘 테이프 뗐고 </div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - Friendship43<div class="selection-meta">평소 화장으로 매번 가리던 흉터?가 있었는데 테라스의원 방문해서 확인해보니 흑자더라구요. 레이저 한번이면 제거가 가능하다고 해서 예약하고 방문했습니다! 매번 컨실러로 가리기일수였는데 얼른 2주 지나고 깨끗한 피부 보</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 너만의 강아지<div class="selection-meta">예전에 테라스의원에서 제 얼굴에 흑자제거를 한적이 있는데, 아빠도 요즘 얼굴에 흑자가 눈에 거슬린다 하셔서 효도겸 모시고 왔어요~ 원장쌤 정말 세상친절하시고 친근하시고 아프지않도록 호다닥 끝내주셔서 언제나 믿습니다!</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 나라공ㅇ<div class="selection-meta">테라스의원 처음 방문해서 상담 받고 바로 진행했어요. 원장님이 직접 피부 상태 보면서 상태를 자세하게 설명해주셔서 신뢰가 가고 안심됐고, 시술도 생각보다 빠르게 끝났어요. 앞으로 관리 방법도 꼼꼼하게 알려주셔서 좋았</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 꺄라하핫<div class="selection-meta">남편이 기미,흑자고민이라 검색하구 찾아서 효과좋다고 방문한 병원이에요 이미 흑자제거,기미 제거로 유명한지 사람이많더라구요,원장님 친절하시구 과잉진료없이 필요한것만 권해주시고 관리법,앞으로 플랜도 잘잡아주세요.색소가 </div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 에이프릴비<div class="selection-meta">굿</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 엘란도르36<div class="selection-meta">써마지 효과 제대로 보고 싶어서 찾아간 곳인데 정말 대만족이에요. 사실 써마지가 가격대가 있는 시술이라 고민이 많았는데, 원장님이 직접 상담하면서 제 얼굴 라인에 맞춰 에너지를 정말 아낌없이 팍팍 넣어주시는 게 느껴</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 파랑새65<div class="selection-meta">흑자 제거로 방문했습니다~ 원장님 간호사님 모두 친절핫셔요 토요일에 오면 대기시간이 길어서 꼭 예약하셔야해요 2주간 테이프 안떨어지게 잘 붙였더니 깨끗하게 제거됐어요~ 테이프가 안떨어지게 유지하는게 가장 중요한것 같</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - zzon****<div class="selection-meta">남자친구 흑자 제거를 위해서 방문 했는데, 시술 2주후 깔끔하게 제거됐어요 ~~ 프라이빗한 공간에서 시술받을 수 있고 대기시간도 길지않아서 추천드립니다 다들 친절하시고 시술 후 주의사항도 꼼꼼하게 체크해주세요~</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - Hotto<div class="selection-meta">매일 거울보며 신경쓰이던 흑자가 말끔히 떨어졌어요~~ 아직 붉은기가있어서 앞으로도 관리를 잘해야겠지만,, 속시원히 제거되서 너무 좋습니다!! 고맙습니다~~^^</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 망고링링요정<div class="selection-meta">일광흑자제거 깔끔히 제거 됐어요 ㅎㅎ</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - mda****<div class="selection-meta">작년에 흑자제거 하고 재발안되고 깨끗해져서 남은것들 또 제거하러 왔어요. 테라스 흑자제거 잘해요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - joha****<div class="selection-meta">리팟하러 왔는데 원장님이 친절하게 상담설명해주시고 빠르게 받고 왔어요. 2주뒤 완전히 사라지길 바라며 기다리겠습니다.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 코달곰크<div class="selection-meta">엄마 흑자제거 큰 부분 제거하러 왔어요 2주지나 3주 후에 깨끗하게 제거되었네요~~</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - gari****<div class="selection-meta">얼굴이 흘러내려서 울쎄라 예약잡고 왔는데 원장님이 더 꺼지면 안된다고 쥬베룩 볼륨 권해주셔서 시술하고 갑니다. 얼굴이 젊었을때 느낌나면서 예뻐져서 신기하네요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - ol****<div class="selection-meta">두달전 써마지 600샷하고 심부볼이랑 팔자가 없어져서 너무 만족하고 오늘은 건조한거 해결하러 권해주셨던 리쥬란하러 왔어요. 써마지 이렇게 효과본거 처음이에요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 설거J<div class="selection-meta">보톡스 잘놔주심.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 이끌어주는<div class="selection-meta">원장님 친절하시고 실력이 훌륭하세요. 흑자 한번에 없앴어어요 ㅎㅎ</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - cru****<div class="selection-meta">강남에 울쎄라 제일유명한곳에서 울쎄라하고 효과 전혀 없었는데 여기서 일년전에 300샷하고 너무 효과 좋아서 다시 왔어요. 손기술이 중요한것 같아요. 오늘도 잘 받고 갑니다.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 노일59<div class="selection-meta">흑자제거 최고!</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 미슐랭M<div class="selection-meta">친절해요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 승리V<div class="selection-meta">예전에 리쥬란하고 너무 아파서 겁냈는데 hb리쥬란은 진짜 안아파서 편하게 시술받았어요. 마취크림도 잘 발라주셔서 좋았어요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - jul****<div class="selection-meta">리팟레이저로 흑자제거 했어요. 진짜 2주만에 다 지워져서 동네방네 소문났네요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 물처럼 바람처럼<div class="selection-meta">20년묵은 흑자 제거하러 방문했어요 진작 갈걸 그랬나봐요 화장품으로 개선이 안되는데 한번에 케어가 된다니 미라클입니다 엄청 친절하시고 간호사쌤들도 다 친절하고 예쁘시고 원장님이 코디없이 직접 상담과 시술을 해주시니 </div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - jiliiil<div class="selection-meta">눈에 몽고반점? 처럼 큰 점이 어릴때부터 있었는데 평생 못뺄줄 알았는데 여기서 뺐습니다ㅠㅠ다른 병원에서는 눈근처라 위험하니 그냥 살아라~ 제거는 가능하지만 속눈썹이 안날꺼다~하셨는데 속눈썹은 살아있고 점만 깨끗하게 </div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - lees****<div class="selection-meta">상담 받고 꾸준히 관리해서 얼굴 많이 깨끗해졌어요. 주변에 소개 많이 했어요.</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - 너만의 강아지<div class="selection-meta">흑자제거후기 보고 방문했는데 시설도 깔끔하고 선생님과 직원분들이 너무너무 친절하셔 만족스러웠습니다!!ㅜㅠ</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - woo****<div class="selection-meta">오늘도 테라스의원은 사람들로 북적였어요 역시 사람들이 많이 찾는 데는 다 이유가 있는 것 같아요 원장님과 직원분들 모두 너무 친절하시고 세심하게 진료해 주셔서, 마치 지인 병원에 온 것처럼 편안했습니다❤️ 흑자 제거</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">방문자 리뷰 - rkddlsdlek<div class="selection-meta">없던 흑자가 갑자기 생겨서 검색하고 검색하고 이병원 왔는데 후기대로 원장님께서 흑자제거 전문가답게 설명도 잘해주시고 사후관리가 중요하잖아요 2주씩 체크하시는 모습이 더 믿음이 갑니다 감사합니다</div></div><span class="badge b-green">선택됨</span></div>
+<div class="selection-place-row"><div class="fake-check on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="selection-place-title">테라스의원<div class="selection-meta">의료/건강 &gt; 병원/클리닉 &gt; 피부과
+서울 종로구 송월길 99 경희궁자이2단지 205동상가 2층
+02-6105-0010
+대표원장 직접상담으로 차별화된 토탈솔루션을 제공하는 광화문 프라이빗 피부과, 테라스의원입니다. </div></div><span class="badge b-green">선택됨</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+    <span id="selection-selected-count" style="font-size:12px;color:#4A5568">블로그 50개 · 플레이스 50개 선택됨</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost">이전</button>
+      <button class="btn btn-primary" id="selection-analysis-btn" data-flow-target="06_AI학습_현황.html" data-flow-label="다음: 학습 현황">분석 실행</button>
+    </div>
+  </div>
+</div>
+
+</div></div>
+<script src="icons.js"></script>
+<script defer src="demo.js?v=20260617-guide-copy-2"></script>
+</body>
+</html>

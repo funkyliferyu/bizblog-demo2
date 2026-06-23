@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>서비스 대시보드 / 매장 추가 진입 · 비즈플래닛 마케팅 채널관리 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="root"><div class="screen-html"><style>
+/* ── 레이아웃 ── */
+.topbar{position:fixed;top:0;left:0;right:0;height:50px;background:#fff;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100}
+.topbar-left{font-size:12px;color:#9AA0B4}
+.topbar-left span{color:#1A1A2E;font-weight:500}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.topbar-noti{position:relative;cursor:pointer}
+.topbar-noti-dot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;background:#E8590C;border-radius:50%;border:1.5px solid #fff}
+.topbar-user{display:flex;align-items:center;gap:7px;font-size:12px;color:#4A5568}
+.topbar-avatar{width:26px;height:26px;background:#EEF2FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3B5BDB}
+.page-wrap{padding:74px 24px 32px}
+
+/* ── 매장 헤더 ── */
+.store-header{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.store-header-left{display:flex;align-items:center;gap:10px}
+.store-icon{width:36px;height:36px;background:#EEF2FF;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.store-name{font-size:15px;font-weight:700;color:#1A1A2E}
+.store-meta{font-size:11px;color:#9AA0B4;margin-top:2px}
+.store-header-right{display:flex;align-items:center;gap:10px}
+.store-count{font-size:11px;color:#9AA0B4}
+.btn-store-switch{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 12px;border:1px solid #E2E8F0;border-radius:6px;font-size:12px;color:#4A5568;background:#F7F8FA;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.btn-store-switch:hover{background:#EDF2F7}
+.store-switcher{position:relative}
+.store-switcher.open .store-menu{display:block}
+.store-menu{display:none;position:absolute;right:0;top:36px;width:280px;background:#fff;border:1px solid #D8E0EC;border-radius:8px;box-shadow:0 12px 28px rgba(15,20,32,.16);padding:6px;z-index:200}
+.store-menu-head{padding:7px 8px 8px;font-size:11px;font-weight:700;color:#4A5568;border-bottom:1px solid #EDF2F7;margin-bottom:4px}
+.store-option{width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:9px 8px;border:none;border-radius:6px;background:#fff;text-align:left;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.store-option:hover{background:#F7F8FA}
+.store-option.active{background:#EEF2FF}
+.store-option-main{min-width:0}
+.store-option-name{font-size:12px;font-weight:700;color:#1A1A2E;margin-bottom:3px}
+.store-option-meta{font-size:11px;color:#9AA0B4;line-height:1.4}
+.store-option-status{font-size:10px;font-weight:700;color:#2F9E44;background:#EBFBEE;border-radius:10px;padding:2px 7px;white-space:nowrap}
+
+/* ── 2컬럼 ── */
+.layout{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+.col-main{display:flex;flex-direction:column;gap:16px}
+.col-side{display:flex;flex-direction:column;gap:14px}
+
+/* ── AI 캠페인 제안 배너 ── */
+.campaign-banner{background:linear-gradient(135deg,#3B5BDB 0%,#4C6EF5 100%);border-radius:8px;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.campaign-icon{width:42px;height:42px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.campaign-body{flex:1}
+.campaign-tag{display:inline-block;font-size:10px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:2px 8px;margin-bottom:5px;letter-spacing:.3px}
+.campaign-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.campaign-desc{font-size:11px;color:rgba(255,255,255,.8);line-height:1.5}
+.campaign-btns{display:flex;gap:7px;flex-shrink:0}
+.btn-campaign{height:34px;padding:0 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;border:none}
+.btn-campaign.white{background:#fff;color:#3B5BDB}
+.btn-campaign.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+
+/* ── 서비스 현황 ── */
+.section-label{font-size:12px;font-weight:700;color:#1A1A2E;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.section-label .sub{font-size:11px;font-weight:400;color:#9AA0B4}
+.svc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.svc-card{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:14px;cursor:pointer;transition:box-shadow .15s,border-color .15s;text-decoration:none;display:block}
+.svc-card:hover{border-color:#748FFC;box-shadow:0 2px 8px rgba(59,91,219,.1)}
+.svc-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.svc-card-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.svc-card-icon.blue{background:#EEF2FF}
+.svc-card-icon.green{background:#EBFBEE}
+.svc-card-icon.purple{background:#F3F0FF}
+.svc-card-name{font-size:11px;font-weight:700;color:#1A1A2E;margin-bottom:8px}
+.svc-stats{display:flex;gap:12px}
+.svc-stat-val{font-size:18px;font-weight:700;color:#1A1A2E;line-height:1}
+.svc-stat-val.warn{color:#E8590C}
+.svc-stat-label{font-size:10px;color:#9AA0B4;margin-top:3px}
+.svc-card-foot{margin-top:10px;padding-top:9px;border-top:1px solid #EDF2F7;font-size:11px;color:#9AA0B4;display:flex;align-items:center;gap:4px}
+.svc-card-foot .warn{color:#E8590C;font-weight:600}
+.svc-card-foot .good{color:#2F9E44;font-weight:600}
+
+/* ── 타임라인 ── */
+.timeline-card{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px}
+.timeline-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.timeline-nav{display:flex;align-items:center;gap:8px}
+.timeline-month{font-size:13px;font-weight:700;color:#1A1A2E;min-width:80px;text-align:center}
+.btn-month{width:26px;height:26px;border:1px solid #E2E8F0;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.btn-month:hover{background:#F7F8FA}
+.timeline-legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#9AA0B4}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ld-pub{background:#3B5BDB}
+.ld-pending{background:#E8590C}
+.ld-ai{background:#2F9E44}
+.ld-ai-plan{border:1.5px solid #2F9E44;background:transparent}
+.timeline-grid{overflow-x:auto}
+.tl-table{width:100%;border-collapse:collapse;min-width:520px}
+.tl-table th{font-size:10px;color:#9AA0B4;font-weight:400;padding:0 0 6px;text-align:center}
+.tl-table th.today{color:#3B5BDB;font-weight:700}
+.tl-row-label{font-size:11px;color:#4A5568;font-weight:500;padding:6px 10px 6px 0;white-space:nowrap;vertical-align:middle}
+.tl-cell{text-align:center;vertical-align:middle;padding:3px 0;height:22px}
+.tl-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.tl-dot-pub{background:#3B5BDB}
+.tl-dot-pending{background:#E8590C}
+.tl-dot-ai{background:#2F9E44}
+.tl-dot-ai-plan{border:1.5px solid #2F9E44;background:transparent}
+.tl-sep td,.tl-sep th{border-top:1px solid #EDF2F7}
+
+/* ── 승인 대기 ── */
+.pending-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pending-link{font-size:11px;font-weight:500;color:#3B5BDB;text-decoration:none}
+.pending-list{background:#fff;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden}
+.pending-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #EDF2F7}
+.pending-item:last-child{border-bottom:none}
+.pending-item:hover{background:#F7F8FA}
+.pending-thumb{width:36px;height:36px;background:#F1F3F5;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.pending-info{flex:1;min-width:0}
+.pending-title{font-size:12px;font-weight:500;color:#1A1A2E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.pending-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:#9AA0B4}
+.pending-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ── 사이드 카드 공통 ── */
+.side-card{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:14px}
+.side-card-title{font-size:12px;font-weight:700;color:#1A1A2E;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.side-card-title a{font-size:11px;font-weight:500;color:#3B5BDB;text-decoration:none}
+
+/* ── 마케팅 전략 ── */
+.strategy-meta{font-size:11px;color:#9AA0B4;margin-bottom:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.strategy-row{margin-bottom:9px}
+.strategy-row:last-child{margin-bottom:0}
+.strategy-label{font-size:10px;font-weight:700;color:#9AA0B4;margin-bottom:3px;letter-spacing:.3px;text-transform:uppercase}
+.strategy-val{font-size:11px;color:#1A1A2E;line-height:1.5}
+.keyword-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.kw-tag{font-size:11px;background:#EEF2FF;color:#3B5BDB;padding:2px 8px;border-radius:10px}
+
+/* ── 매장 정보 ── */
+.store-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.info-label{font-size:10px;font-weight:700;color:#9AA0B4;margin-bottom:2px;letter-spacing:.3px;text-transform:uppercase}
+.info-val{font-size:11px;color:#1A1A2E;line-height:1.5;word-break:break-all}
+.info-val.url{color:#3B5BDB}
+.store-info-footer{margin-top:10px;padding-top:9px;border-top:1px solid #EDF2F7}
+.store-info-footer a{font-size:11px;font-weight:600;color:#3B5BDB;text-decoration:none}
+
+/* ── 최근 알림 ── */
+.noti-item{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #EDF2F7}
+.noti-item:last-child{border-bottom:none}
+.noti-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.nd-orange{background:#E8590C}
+.nd-blue{background:#3B5BDB}
+.nd-green{background:#2F9E44}
+.nd-gray{background:#CED4DA}
+.noti-text{font-size:11px;color:#1A1A2E;line-height:1.5}
+.noti-time{font-size:10px;color:#9AA0B4;margin-top:2px}
+</style>
+
+
+<!-- 탑바 -->
+<div class="topbar">
+  <div class="topbar-left">매장 관리 › <span>대시보드</span></div>
+  <div class="topbar-right">
+    <div class="topbar-noti">
+      <span data-icon="alert-circle" data-size="18" data-color="#9AA0B4"></span>
+      <div class="topbar-noti-dot"></div>
+    </div>
+    <div class="topbar-user">
+      <div class="topbar-avatar">홍</div>
+      홍길동 사장님
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ① 정상 운영 중 -->
+  <div id="state-normal">
+
+  <!-- 매장 헤더 -->
+  <div class="store-header">
+    <div class="store-header-left">
+      <div class="store-icon">
+        <span data-icon="map-pin" data-size="16" data-color="#3B5BDB"></span>
+      </div>
+      <div>
+        <div class="store-name" data-store-field="name">맛있는 떡볶이 홍대점</div>
+        <div class="store-meta" data-store-field="meta">서울 마포구 · 분식 · 마지막 로그인 오늘 09:32</div>
+      </div>
+    </div>
+    <div class="store-header-right">
+      <span class="store-count">운영 중인 매장 3개</span>
+      <button class="btn-store-switch" data-flow-target="soho_store_register.html" data-flow-label="다음: 매장 정보 등록">
+        <span data-icon="plus" data-size="12" data-color="currentColor"></span>
+        매장 추가
+      </button>
+      <div class="store-switcher" data-store-count="3">
+        <button type="button" class="btn-store-switch" id="storeSwitchButton" aria-expanded="false" aria-controls="storeMenu">
+          <span data-icon="refresh-cw" data-size="12" data-color="currentColor"></span>
+          매장 전환
+        </button>
+        <div class="store-menu" id="storeMenu" role="menu" aria-label="운영 중인 매장 전환">
+          <div class="store-menu-head">운영 중인 매장 3개</div>
+          <button type="button" class="store-option active" data-store-id="hongdae" role="menuitem">
+            <span class="store-option-main">
+              <span class="store-option-name">맛있는 떡볶이 홍대점</span>
+              <span class="store-option-meta">서울 마포구 · 분식 · 네이버 플레이스 연결</span>
+            </span>
+            <span class="store-option-status">현재</span>
+          </button>
+          <button type="button" class="store-option" data-store-id="bundang" role="menuitem">
+            <span class="store-option-main">
+              <span class="store-option-name">맛있는 떡볶이 분당점</span>
+              <span class="store-option-meta">경기 성남시 분당구 · 분식 · 승인 대기 1건</span>
+            </span>
+            <span class="store-option-status">전환</span>
+          </button>
+          <button type="button" class="store-option" data-store-id="suji" role="menuitem">
+            <span class="store-option-main">
+              <span class="store-option-name">맛있는 떡볶이 수지점</span>
+              <span class="store-option-meta">경기 용인시 수지구 · 분식 · AI 학습 정상</span>
+            </span>
+            <span class="store-option-status">전환</span>
+          </button>
+        </div>
+      </div>
+      <!-- /store-switcher -->
+    </div>
+  </div>
+
+  <!-- 2컬럼 레이아웃 -->
+  <div class="layout">
+
+    <!-- 좌 메인 -->
+    <div class="col-main">
+
+      <!-- AI 캠페인 제안 배너 -->
+      <div class="campaign-banner">
+        <div class="campaign-icon">
+          <span data-icon="sparkles" data-size="20" data-color="#fff"></span>
+        </div>
+        <div class="campaign-body">
+          <div class="campaign-tag">AI 캠페인 제안</div>
+          <div class="campaign-title">주말 재방문 유도 캠페인이 준비됐어요</div>
+          <div class="campaign-desc">지오펜스 타겟 · RCS 이미지 메시지 · 발송 예정 토요일 11:00</div>
+        </div>
+        <div class="campaign-btns">
+          <button class="btn-campaign white">바로가기</button>
+        </div>
+      </div>
+
+      <!-- AI 학습 실패 경고 (조건부 노출) -->
+      <div style="background:#EEF2FF;border:1px solid #748FFC;border-radius:8px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+        <div style="width:42px;height:42px;background:rgba(59,91,219,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span data-icon="alert-triangle" data-size="20" data-color="#3B5BDB"></span>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:#3B5BDB;margin-bottom:3px">AI 학습이 실패했어요</div>
+          <div style="font-size:11px;color:#3B5BDB;opacity:.85">블로그 채널 수집 중 오류가 발생했어요. 채널 URL을 확인하거나 재시도해 주세요.</div>
+        </div>
+        <div style="flex-shrink:0">
+          <button class="btn-campaign" style="height:34px;padding:0 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;background:#3B5BDB;color:#fff;border:none">바로가기</button>
+        </div>
+      </div>
+
+      <!-- 승인 대기 방치 경고 (조건부 노출) -->
+      <div style="background:#EEF2FF;border:1px solid #748FFC;border-radius:8px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+        <div style="width:42px;height:42px;background:rgba(59,91,219,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span data-icon="clock" data-size="20" data-color="#3B5BDB"></span>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:#3B5BDB;margin-bottom:3px">승인 대기 콘텐츠 5건이 7일째 방치 중이에요</div>
+          <div style="font-size:11px;color:#3B5BDB;opacity:.85">대행사로부터 요청된 콘텐츠입니다. 승인 또는 반려 처리를 해주세요.</div>
+        </div>
+        <div style="flex-shrink:0">
+          <button class="btn-campaign" style="height:34px;padding:0 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;background:#3B5BDB;color:#fff;border:none">바로가기</button>
+        </div>
+      </div>
+
+      <!-- 서비스 현황 -->
+      <div>
+        <div class="section-label">
+          이번 달 서비스 현황
+          <span class="sub">2026년 5월</span>
+        </div>
+        <div class="svc-cards">
+
+          <a class="svc-card" href="soho_store_register.html" data-flow-target="soho_store_register.html" data-flow-label="다음: 마케팅 채널관리 진입">
+            <div class="svc-card-top">
+              <div class="svc-card-icon blue">
+                <span data-icon="file-text" data-size="15" data-color="#3B5BDB"></span>
+              </div>
+              <span class="badge b-green">정상</span>
+            </div>
+            <div class="svc-card-name">마케팅 채널관리</div>
+            <div class="svc-stats">
+              <div><div class="svc-stat-val">8</div><div class="svc-stat-label">발행 완료</div></div>
+              <div><div class="svc-stat-val warn">2</div><div class="svc-stat-label">승인 대기</div></div>
+              <div><div class="svc-stat-val">94</div><div class="svc-stat-label">평균 SEO</div></div>
+            </div>
+            <div class="svc-card-foot"><span class="warn">승인 대기 2건</span> 확인 필요</div>
+          </a>
+
+          <a class="svc-card" href="#">
+            <div class="svc-card-top">
+              <div class="svc-card-icon green">
+                <span data-icon="megaphone" data-size="15" data-color="#2F9E44"></span>
+              </div>
+              <span class="badge b-blue">발송 중</span>
+            </div>
+            <div class="svc-card-name">비즈챗</div>
+            <div class="svc-stats">
+              <div><div class="svc-stat-val">1,240</div><div class="svc-stat-label">발송 건수</div></div>
+              <div><div class="svc-stat-val">83<span style="font-size:12px;font-weight:400">%</span></div><div class="svc-stat-label">성공률</div></div>
+            </div>
+            <div class="svc-card-foot">발송 예약 가능 <span class="good">760건</span></div>
+          </a>
+
+          <a class="svc-card" href="#">
+            <div class="svc-card-top">
+              <div class="svc-card-icon purple">
+                <span data-icon="sparkles" data-size="15" data-color="#7950F2"></span>
+              </div>
+              <span class="badge b-green">운영 중</span>
+            </div>
+            <div class="svc-card-name">AI 챗봇</div>
+            <div class="svc-stats">
+              <div><div class="svc-stat-val">34</div><div class="svc-stat-label">이번 달 상담</div></div>
+              <div><div class="svc-stat-val">5</div><div class="svc-stat-label">예약 신청</div></div>
+            </div>
+            <div class="svc-card-foot"><span class="good">전월 대비 +12건</span></div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- 이번 달 타임라인 -->
+      <div class="timeline-card">
+        <div class="timeline-header">
+          <div class="timeline-nav">
+            <button class="btn-month">
+              <span data-icon="chevron-left" data-size="13" data-color="#4A5568"></span>
+            </button>
+            <div class="timeline-month" id="tl-month">2026년 5월</div>
+            <button class="btn-month">
+              <span data-icon="chevron-right" data-size="13" data-color="#4A5568"></span>
+            </button>
+          </div>
+          <div class="timeline-legend">
+            <div class="legend-item"><div class="legend-dot ld-pub"></div> 발행 완료</div>
+            <div class="legend-item"><div class="legend-dot ld-pending"></div> 승인 대기</div>
+            <div class="legend-item"><div class="legend-dot ld-ai"></div> 수집 완료</div>
+            <div class="legend-item"><div class="legend-dot ld-ai-plan"></div> 수집 예정</div>
+          </div>
+        </div>
+        <div class="timeline-grid">
+          <table class="tl-table" id="tl-table"></table>
+        </div>
+      </div>
+
+      <!-- 승인 대기 콘텐츠 -->
+      <div>
+        <div class="pending-header">
+          <div class="section-label" style="margin-bottom:0">
+            승인 대기 콘텐츠
+            <span class="badge b-orange" style="font-size:10px;padding:1px 7px">2</span>
+          </div>
+          <a class="pending-link" href="02_블로그관리.html" data-flow-target="02_블로그관리.html" data-flow-label="다음: 블로그 관리">블로그관리 전체보기 →</a>
+        </div>
+        <div class="pending-list">
+          <div class="pending-item">
+            <div class="pending-thumb">📝</div>
+            <div class="pending-info">
+              <div class="pending-title">5월 황금연휴 떡볶이 할인 이벤트 안내 – 방문하면 더 맛있어요!</div>
+              <div class="pending-meta">
+                <span class="badge b-blue" style="font-size:10px;padding:1px 6px">AI 자동생성</span>
+                2026.05.29 08:10 생성 · SEO 96점
+              </div>
+            </div>
+            <div class="pending-actions">
+              <button class="btn btn-sm btn-ghost">반려</button>
+              <button class="btn btn-sm btn-primary">발행 완료 처리</button>
+            </div>
+          </div>
+          <div class="pending-item">
+            <div class="pending-thumb">📝</div>
+            <div class="pending-info">
+              <div class="pending-title">우리 매장 인기 메뉴 TOP 5 – 단골 사장님이 추천하는 진짜 맛집</div>
+              <div class="pending-meta">
+                <span class="badge b-blue" style="font-size:10px;padding:1px 6px">AI 자동생성</span>
+                2026.05.28 08:05 생성 · SEO 91점
+              </div>
+            </div>
+            <div class="pending-actions">
+              <button class="btn btn-sm btn-ghost">반려</button>
+              <button class="btn btn-sm btn-primary">발행 완료 처리</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-main -->
+
+    <!-- 우 사이드 -->
+    <div class="col-side">
+
+      <!-- 마케팅 전략 현황 -->
+      <div class="side-card">
+        <div class="side-card-title">
+          마케팅 전략 현황
+          <a href="07_마케팅전략룰셋.html" data-flow-target="07_마케팅전략룰셋.html" data-flow-label="다음: 마케팅 전략 룰셋">자세히 보기 →</a>
+        </div>
+        <div class="strategy-meta">
+          <span>마지막 학습 <strong style="color:#1A1A2E">2026.05.16</strong></span>
+          <span style="color:#E2E8F0">|</span>
+          <span>다음 수집 <strong style="color:#1A1A2E">2026.05.30</strong></span>
+          <span class="badge b-green" style="font-size:10px;padding:1px 7px">룰셋 정상</span>
+        </div>
+        <div class="strategy-row">
+          <div class="strategy-label">매장 특징</div>
+          <div class="strategy-val">홍대 상권 즉석 떡볶이 전문점 / 매콤달콤 양념, 바삭한 튀김, 빠른 회전이 강점인 분식 맛집</div>
+        </div>
+        <div class="strategy-row">
+          <div class="strategy-label">글쓰기 톤</div>
+          <div class="strategy-val">활기차고 친근한 구어체 / 매운맛 단계, 세트메뉴, 방문 혜택을 구체적으로 안내</div>
+        </div>
+        <div class="strategy-row">
+          <div class="strategy-label">발행 방식</div>
+          <div class="strategy-val"><span class="badge b-blue" style="font-size:10px">승인 후 발행</span></div>
+        </div>
+        <div class="strategy-row">
+          <div class="strategy-label">대표 키워드</div>
+          <div class="keyword-tags">
+            <span class="kw-tag">홍대 떡볶이</span>
+            <span class="kw-tag">즉석떡볶이</span>
+            <span class="kw-tag">분식 맛집</span>
+            <span class="kw-tag">튀김 세트</span>
+            <span class="kw-tag">매운맛 선택</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 매장 정보 -->
+      <div class="side-card">
+        <div class="side-card-title">매장 정보</div>
+        <div class="store-info-grid">
+          <div>
+            <div class="info-label">업종</div>
+            <div class="info-val" data-store-field="industry">분식</div>
+          </div>
+          <div>
+            <div class="info-label">연락처</div>
+            <div class="info-val" data-store-field="tel">02-1234-5678</div>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="info-label">주소</div>
+            <div class="info-val" data-store-field="address">서울 마포구 홍익로 5길 12</div>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="info-label">네이버 블로그</div>
+            <div class="info-val url" data-store-field="blog">blog.naver.com/tteokstar</div>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="info-label">네이버 플레이스</div>
+            <div class="info-val url" data-store-field="place">naver.me/FxK2mNpQ</div>
+          </div>
+        </div>
+        <div class="store-info-footer">
+          <a href="#">매장 정보 수정 →</a>
+        </div>
+      </div>
+
+      <!-- 최근 알림 -->
+      <div class="side-card">
+        <div class="side-card-title">최근 알림</div>
+        <div class="noti-item">
+          <div class="noti-dot nd-orange"></div>
+          <div><div class="noti-text">블로그 콘텐츠 2건이 승인을 기다리고 있어요</div><div class="noti-time">방금 전</div></div>
+        </div>
+        <div class="noti-item">
+          <div class="noti-dot nd-blue"></div>
+          <div><div class="noti-text">AI 캠페인 제안이 도착했어요 – 주말 재방문 유도</div><div class="noti-time">1시간 전</div></div>
+        </div>
+        <div class="noti-item">
+          <div class="noti-dot nd-green"></div>
+          <div><div class="noti-text">블로그 콘텐츠 발행이 완료됐어요</div><div class="noti-time">어제</div></div>
+        </div>
+        <div class="noti-item">
+          <div class="noti-dot nd-gray"></div>
+          <div><div class="noti-text">비즈챗 캠페인 발송이 완료됐어요 (성공 1,240건)</div><div class="noti-time">3일 전</div></div>
+        </div>
+      </div>
+
+    </div><!-- /col-side -->
+
+  </div><!-- /layout -->
+
+  </div><!-- /state-normal -->
+
+  <!-- ② AI 학습 미완료 -->
+  <div id="state-no-ai" style="display:none">
+
+    <div class="store-header">
+      <div class="store-header-left">
+        <div class="store-icon"><span data-icon="map-pin" data-size="16" data-color="#3B5BDB"></span></div>
+        <div>
+          <div class="store-name">맛있는 떡볶이 홍대점</div>
+          <div class="store-meta">서울 마포구 · 분식 · 신규 등록 매장</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 온보딩 카드 -->
+    <div style="background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:32px 24px;text-align:center;margin-bottom:16px">
+      <div style="width:52px;height:52px;background:#EEF2FF;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <span data-icon="brain" data-size="26" data-color="#3B5BDB"></span>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:8px">AI 학습을 시작해야 서비스를 이용할 수 있어요</div>
+      <div style="font-size:13px;color:#9AA0B4;line-height:1.6;max-width:480px;margin:0 auto 24px">
+        블로그·네이버플레이스 채널을 등록하고 AI 학습을 시작하면<br>콘텐츠 자동 생성과 마케팅 전략 룰셋이 만들어져요
+      </div>
+      <!-- 단계 -->
+      <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-bottom:24px">
+        <div style="display:flex;flex-direction:column;align-items:center;width:110px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#EBFBEE;color:#2F9E44;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:7px">
+            <span data-icon="check" data-size="14" data-color="#2F9E44"></span>
+          </div>
+          <div style="font-size:11px;color:#4A5568;text-align:center;line-height:1.4">매장 정보<br>등록 완료</div>
+        </div>
+        <div style="padding-top:13px;color:#CED4DA;width:32px;text-align:center"><span data-icon="chevron-right" data-size="16" data-color="#CED4DA"></span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;width:110px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#3B5BDB;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:7px">2</div>
+          <div style="font-size:11px;color:#3B5BDB;font-weight:600;text-align:center;line-height:1.4">AI 학습<br>설정하기</div>
+        </div>
+        <div style="padding-top:13px;color:#CED4DA;width:32px;text-align:center"><span data-icon="chevron-right" data-size="16" data-color="#CED4DA"></span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;width:110px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#EEF2FF;color:#3B5BDB;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:7px">3</div>
+          <div style="font-size:11px;color:#4A5568;text-align:center;line-height:1.4">AI 학습<br>시작하기</div>
+        </div>
+        <div style="padding-top:13px;color:#CED4DA;width:32px;text-align:center"><span data-icon="chevron-right" data-size="16" data-color="#CED4DA"></span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;width:110px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#EEF2FF;color:#3B5BDB;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:7px">4</div>
+          <div style="font-size:11px;color:#4A5568;text-align:center;line-height:1.4">콘텐츠<br>자동 생성</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="height:40px;padding:0 28px;font-size:13px">
+        <span data-icon="rss" data-size="14" data-color="#fff"></span>
+          AI 학습 설정하러 가기
+      </button>
+    </div>
+
+    <!-- 서비스 현황 (잠금) -->
+    <div class="section-label">서비스 현황</div>
+    <div class="svc-cards">
+      <div class="svc-card" style="opacity:.5;pointer-events:none">
+        <div class="svc-card-top"><div class="svc-card-icon blue"><span data-icon="file-text" data-size="15" data-color="#3B5BDB"></span></div><span class="badge b-gray">준비 필요</span></div>
+        <div class="svc-card-name">마케팅 채널관리</div>
+        <div style="font-size:11px;color:#9AA0B4;margin-top:8px;text-align:center;padding:8px 0">AI 학습 완료 후 이용 가능해요</div>
+      </div>
+      <div class="svc-card" style="cursor:default">
+        <div class="svc-card-top"><div class="svc-card-icon green"><span data-icon="megaphone" data-size="15" data-color="#2F9E44"></span></div><span class="badge b-gray">미가입</span></div>
+        <div class="svc-card-name">비즈챗</div>
+        <div style="font-size:11px;color:#9AA0B4;margin-top:8px;text-align:center;padding:8px 0">비즈챗 상품 가입 후 이용 가능해요<br><a href="#" style="color:#3B5BDB;font-weight:600;font-size:11px">상품 안내 보기 →</a></div>
+      </div>
+      <div class="svc-card" style="cursor:default">
+        <div class="svc-card-top"><div class="svc-card-icon purple"><span data-icon="sparkles" data-size="15" data-color="#7950F2"></span></div><span class="badge b-gray">준비 중</span></div>
+        <div class="svc-card-name">AI 챗봇</div>
+        <div style="font-size:11px;color:#9AA0B4;margin-top:8px;text-align:center;padding:8px 0">현재 개설 신청이 가능해요<br><a href="#" style="color:#3B5BDB;font-weight:600;font-size:11px">개설 신청 →</a></div>
+      </div>
+    </div>
+
+    <!-- 매장정보 + 최근알림 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+      <div class="side-card">
+        <div class="side-card-title">매장 정보</div>
+        <div class="store-info-grid">
+          <div><div class="info-label">업종</div><div class="info-val">분식</div></div>
+          <div><div class="info-label">연락처</div><div class="info-val">02-1234-5678</div></div>
+          <div style="grid-column:1/-1"><div class="info-label">주소</div><div class="info-val">서울 마포구 홍익로 5길 12</div></div>
+          <div style="grid-column:1/-1"><div class="info-label">네이버 블로그</div><div class="info-val" style="color:#CED4DA">미등록</div></div>
+          <div style="grid-column:1/-1"><div class="info-label">네이버 플레이스</div><div class="info-val" style="color:#CED4DA">미등록</div></div>
+        </div>
+        <div class="store-info-footer"><a href="#">매장 정보 수정 →</a></div>
+      </div>
+      <div class="side-card">
+        <div class="side-card-title">최근 알림</div>
+        <div class="noti-item"><div class="noti-dot nd-green"></div><div><div class="noti-text">매장 등록이 완료됐어요</div><div class="noti-time">오늘</div></div></div>
+        <div class="noti-item"><div class="noti-dot nd-blue"></div><div><div class="noti-text">채널 URL 등록 후 AI 학습을 시작해 주세요</div><div class="noti-time">오늘</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- /state-no-ai -->
+
+  <!-- ③ 매장 미등록 -->
+  <div id="state-no-store" style="display:none">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center">
+      <div style="width:56px;height:56px;background:#EEF2FF;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+        <span data-icon="map-pin" data-size="28" data-color="#3B5BDB"></span>
+      </div>
+      <div style="font-size:18px;font-weight:700;color:#1A1A2E;margin-bottom:10px">비즈플래닛에 오신 것을 환영해요!</div>
+      <div style="font-size:13px;color:#9AA0B4;line-height:1.8;margin-bottom:28px">
+        첫 번째 매장을 등록하고 마케팅을 시작해보세요<br>
+        <span style="font-size:12px">매장 등록 후 AI 학습까지 완료하면 콘텐츠 자동 생성이 시작돼요</span>
+      </div>
+      <button class="btn btn-primary" data-flow-target="soho_store_register.html" data-flow-label="다음: 매장 정보 등록" style="height:42px;padding:0 32px;font-size:14px">
+        <span data-icon="plus" data-size="15" data-color="#fff"></span>
+        매장 등록하기
+      </button>
+    </div>
+  </div><!-- /state-no-store -->
+
+</div><!-- /page-wrap -->
+
+
+
+</div></div>
+<script src="icons.js"></script>
+<script defer src="demo.js?v=20260617-guide-copy-2"></script>
+</body>
+</html>

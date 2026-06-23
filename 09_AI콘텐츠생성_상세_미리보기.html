@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>블로그 적용 미리보기 · 비즈플래닛 마케팅 채널관리 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="root"><div class="screen-html"><style>
+.img-card{border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.img-card.selected{border:2px solid #3B5BDB}
+.img-thumb{aspect-ratio:1;background:#F7F8FA;display:flex;align-items:center;justify-content:center}
+.img-label{font-size:11px;padding:6px 8px;color:#4A5568;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #E2E8F0}
+.sel-dot{width:16px;height:16px;border-radius:50%;background:#3B5BDB;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.seo-bar{display:flex;align-items:center;gap:10px}
+.seo-track{flex:1;height:5px;background:#EDF2F7;border-radius:10px;overflow:hidden}
+.seo-fill{height:100%;background:#2F9E44;border-radius:10px;width:84%}
+.seo-breakdown{margin-top:12px;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden;background:#fff}
+.seo-breakdown-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#F7F8FA;border-bottom:1px solid #E2E8F0}
+.seo-breakdown-title{font-size:12px;font-weight:700;color:#1A1A2E}
+.seo-score-items{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+.seo-score-item{padding:10px 12px;border-right:1px solid #EDF2F7;border-bottom:1px solid #EDF2F7}
+.seo-score-item:nth-child(2n){border-right:none}
+.seo-score-item:nth-last-child(-n+2){border-bottom:none}
+.seo-score-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.seo-score-name{font-size:11px;font-weight:700;color:#4A5568}
+.seo-score-val{font-size:12px;font-weight:800;color:#2F9E44}
+.seo-score-copy{font-size:11px;color:#6B7280;line-height:1.5}
+.content-body-box{font-size:12px;color:#1A1A2E;background:#F7F8FA;border:1px solid #E2E8F0;border-radius:6px;padding:12px 14px;line-height:1.8;max-height:260px;overflow:hidden}
+.content-body-box p{margin:0 0 12px}
+.content-body-box p:last-child{margin-bottom:0}
+.content-image-slot{margin:10px 0;padding:14px;border:1px dashed #BAC8FF;border-radius:8px;background:#EEF2FF;color:#3B5BDB;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.content-image-slot span{font-size:11px;font-weight:500;color:#4A5568}
+.content-provenance-line{display:none;margin:0 0 14px;padding:8px 10px;border:1px solid #E2E8F0;border-radius:6px;background:#F8FAFC;font-size:12px;color:#4A5568;line-height:1.5}
+.content-provenance-line strong{color:#1A1A2E}
+.blog-preview-modal{width:calc(100vw - 48px);height:calc(100vh - 48px);max-width:none;padding:0;display:flex;flex-direction:column;overflow:hidden}
+.blog-preview-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #E2E8F0;background:#fff}
+.blog-preview-title{font-size:15px;font-weight:800;color:#1A1A2E;margin-bottom:4px}
+.blog-preview-sub{font-size:12px;color:#6B7280}
+.blog-preview-scroll{flex:1;overflow:auto;background:#F5F6FA;padding:24px}
+.blog-preview-shell{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:18px;max-width:1100px;margin:0 auto}
+.blog-preview-article{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:32px;min-height:640px}
+.blog-preview-article h1{font-size:26px;line-height:1.4;color:#1A1A2E;margin:0 0 28px}
+.blog-preview-meta{display:none;font-size:12px;color:#9AA0B4;border-bottom:1px solid #EDF2F7;padding-bottom:14px;margin-bottom:18px}
+.blog-preview-body{font-size:15px;line-height:2;color:#1A1A2E}
+.blog-preview-section{margin:0 0 22px}
+.blog-preview-section h2{font-size:21px;line-height:1.45;color:#1A1A2E;margin:0 0 12px}
+.blog-preview-section p{margin:0 0 12px;white-space:pre-wrap}
+.blog-preview-image{min-height:190px;border:1px dashed #BAC8FF;border-radius:8px;background:#F7F9FF;color:#4A5568;margin:18px 0 30px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}
+.blog-preview-image-label{font-size:12px;font-weight:800;color:#3B5BDB}
+.blog-preview-image-copy{font-size:12px;font-weight:600;line-height:1.6;max-width:620px}
+.blog-preview-cta{margin-top:26px;padding:18px 20px;border:1px solid #E2E8F0;border-radius:8px;background:#F8FAFC;font-size:14px;font-weight:700;line-height:1.7;color:#1A1A2E}
+.blog-preview-sidebar{display:flex;flex-direction:column;gap:10px}
+.blog-preview-side-card{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:12px}
+.blog-preview-side-title{font-size:12px;font-weight:700;color:#1A1A2E;margin-bottom:8px}
+.blog-preview-thumb{height:92px;border-radius:6px;background:#F7F8FA;border:1px solid #E2E8F0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6B7280;margin-bottom:8px}
+.action-bar{background:#F7F8FA;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:4px}
+@media(max-width:900px){
+  .seo-score-items{grid-template-columns:1fr}
+  .seo-score-item,.seo-score-item:nth-child(2n),.seo-score-item:nth-last-child(-n+2){border-right:none;border-bottom:1px solid #EDF2F7}
+  .seo-score-item:last-child{border-bottom:none}
+  .blog-preview-shell{grid-template-columns:1fr}
+}
+</style>
+<style data-blog-preview-layout>
+.content-image-grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important}
+.img-thumb{background:#F7F8FA!important;overflow:hidden!important}
+.img-thumb img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+.img-thumb.is-notice img{object-fit:contain!important;background:#fff!important;padding:8px!important}
+.img-label{min-height:46px!important;align-items:flex-start!important;gap:6px!important;line-height:1.35!important}
+.img-label-text{min-width:0!important;display:flex!important;flex-direction:column!important;gap:2px!important}
+.img-label-main{font-size:11px!important;font-weight:800!important;color:#1A1A2E!important}
+.img-label-desc{font-size:10px!important;font-weight:500!important;color:#6B7280!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.content-image-slot{display:block!important;margin:18px 0 22px!important;padding:0!important;border:1px solid #E2E8F0!important;border-radius:8px!important;background:#fff!important;overflow:hidden!important;color:#4A5568!important}
+.content-image-slot img{width:100%!important;max-height:260px!important;object-fit:cover!important;display:block!important}
+.content-image-slot.is-notice img{max-height:160px!important;object-fit:contain!important;background:#fff!important;padding:14px!important}
+.content-image-slot figcaption{display:flex!important;align-items:center!important;gap:8px!important;padding:8px 10px!important;border-top:1px solid #EDF2F7!important;background:#F8FAFC!important;font-size:11px!important;line-height:1.45!important}
+.content-image-slot figcaption strong{font-size:11px!important;font-weight:800!important;color:#3B5BDB!important;white-space:nowrap!important}
+.content-image-slot figcaption span{font-size:11px!important;font-weight:500!important;color:#4A5568!important}
+.content-image-placeholder{display:block!important;margin:18px 0 22px!important;padding:14px!important;border:1px dashed #B8C2FF!important;border-radius:6px!important;background:#F7F8FA!important;color:#3B5BDB!important;font-size:12px!important;font-weight:700!important;line-height:1.5!important}
+.content-image-placeholder span{font-weight:500!important;color:#4A5568!important}
+.blog-preview-article{background:#fff!important;border:1px solid #E2E8F0!important;border-radius:8px!important;padding:42px 46px 48px!important}
+.blog-preview-article h1#blogPreviewTitle{font-size:30px!important;font-weight:800!important;line-height:1.42!important;color:#1A1A2E!important;margin:0 0 18px!important;letter-spacing:0!important;word-break:keep-all}
+.blog-preview-meta{display:flex!important;align-items:center!important;gap:10px!important;font-size:14px!important;color:#9AA0B4!important;line-height:1.5!important;margin:0 0 44px!important}
+.blog-preview-author-avatar{width:28px!important;height:28px!important;border-radius:999px!important;background:#087A43!important;color:#fff!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 28px!important;font-size:6px!important;font-weight:700!important;line-height:1!important;text-align:center!important;letter-spacing:0!important}
+.blog-preview-author-name{font-weight:600!important;color:#1A1A2E!important}
+.blog-preview-meta-divider{color:#CBD0DA!important}
+.blog-preview-meta-date{color:#9AA0B4!important}
+.blog-preview-body{font-size:15px!important;line-height:2!important;color:#1A1A2E!important}
+.blog-preview-section{margin:0 0 64px!important}
+.blog-preview-section h2{font-size:22px!important;font-weight:800!important;line-height:1.45!important;color:#1A1A2E!important;margin:0 0 32px!important;letter-spacing:0!important;word-break:keep-all}
+.blog-preview-section p{font-size:15px!important;font-weight:400!important;line-height:2.05!important;color:#1A1A2E!important;margin:0 0 32px!important;white-space:pre-wrap!important;word-break:keep-all}
+.blog-preview-image{display:block!important;border:1px solid #E2E8F0!important;border-radius:8px!important;background:#fff!important;color:#4A5568!important;margin:38px 0 64px!important;padding:0!important;overflow:hidden!important}
+.blog-preview-image img{width:100%!important;max-height:380px!important;object-fit:cover!important;display:block!important}
+.blog-preview-image.is-notice img{max-height:190px!important;object-fit:contain!important;background:#fff!important;padding:18px!important}
+.blog-preview-image figcaption{display:flex!important;align-items:center!important;gap:10px!important;padding:12px 14px!important;border-top:1px solid #EDF2F7!important;background:#F8FAFC!important;line-height:1.55!important}
+.blog-preview-image figcaption strong{font-size:13px!important;font-weight:800!important;color:#3B5BDB!important}
+.blog-preview-image figcaption span{font-size:12px!important;font-weight:700!important;color:#4A5568!important}
+.blog-preview-thumb{height:auto!important;border-radius:6px!important;background:#fff!important;border:1px solid #E2E8F0!important;display:block!important;overflow:hidden!important;text-align:left!important;margin-bottom:8px!important;color:#4A5568!important}
+.blog-preview-thumb img{width:100%!important;height:88px!important;object-fit:cover!important;display:block!important}
+.blog-preview-thumb.is-notice img{object-fit:contain!important;background:#fff!important;padding:8px!important}
+.blog-preview-thumb span{display:block!important;padding:7px 8px!important;font-size:11px!important;font-weight:600!important;line-height:1.45!important;color:#4A5568!important}
+.blog-preview-footer{margin-top:32px;white-space:pre-line;font-size:14px;font-weight:400;line-height:2;color:#1A1A2E}
+.blog-preview-cta{margin-top:28px!important}
+.publish-preview-shell{max-width:960px!important}
+.publish-preview-shell .blog-preview-article{min-height:auto!important}
+@media(max-width:900px){
+  .blog-preview-scroll{padding:16px!important}
+  .blog-preview-article{padding:28px 24px 34px!important}
+  .blog-preview-article h1#blogPreviewTitle{font-size:24px!important}
+  .content-image-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+</style>
+
+
+<div class="topbar">
+  <div class="topbar-breadcrumb">마케팅 채널관리 &rsaquo; AI 콘텐츠 자동 생성 &rsaquo; <span>콘텐츠 상세</span></div>
+</div>
+<div class="main-content">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer">
+    <span class="icon-arrow-left" data-icon="arrow-left" data-size="14" data-color="#4A5568"></span>
+    <span style="font-size:13px;color:#4A5568">목록으로</span>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div id="content-detail-title" style="font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:4px">리팟레이저로 흑자 제거 효과없나요? 원인은 반복치료 때문입니다.</div>
+        <div id="content-detail-meta" style="font-size:11px;color:#9AA0B4">2026-06-16T09:18:22.020Z 생성 · 블로그 · blog_posts</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-ghost btn-sm" style="white-space:nowrap" id="openBlogPreviewBtn"><span class="icon-maximize-2" data-icon="maximize-2" data-size="12" data-color="currentColor"></span> 블로그 적용 미리보기</button>
+        <span class="badge b-orange" id="content-detail-status">승인 대기</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="content-provenance-line" id="content-provenance-line"></div>
+
+      <!-- 본문 -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:#4A5568;margin-bottom:6px">본문</div>
+        <div class="content-body-box" id="draftContentBody"><p>리팟레이저 흑자 제거 방법 상담 전 확인할 점 안녕하세요. 테라스의원 대표원장 권유정입니다. 흑자 제거를 위해 리팟레이저를 고려하시며, 효과에 대한 의문을 품고 계실 거라 생각합니다. 리팟레이저는 최근 흑자 제거에 대한 매우 강력한 치료 장비로 많은 분들이 찾고 있습니다. 하지만 많은 환자분들이 &quot;리팟레이저 치료 후에도 흑자가 다시 생기면 어쩌나&quot;라고 걱정하시는 모습을 봅니다. 이러한 의문이 생기는 이유는 여러 요소들 때문인데요, 오늘은 리팟레이저가 흑자 제거에 뛰어난 이유와 이를 사용하면서 주의해야 할 점들을 퍼스널하게 안내드리겠습니다.</p>
+          <div class="content-image-slot content-image-placeholder" data-image-slot="1">[이미지1 배치] <span>테라스의원 대표 이미지</span></div>
+          <p>리팟레이저란 무엇인가요? 리팟레이저는 멜라닌 색소에 선택적으로 작용하여 색소를 제거하는 데 도움을 주는 레이저 장비입니다. 이 장비는 주변 피부에는 최소한의 영향을 미치면서도 강력한 흑자 제거 효과를 자랑합니다.</p>
+          <div class="content-image-slot content-image-placeholder" data-image-slot="2">[이미지2 배치] <span>리팟레이저 대표 이미지</span></div>
+          <p>흑자 제거의 원리 흑자는 진피층까지 침투하는 색소성 질환으로, 단순한 제거가 어려운 난치병입니다. 리팟레이저는 강력한 에너지를 사용해 피부 깊숙이 있는 멜라닌 세포를 효과적으로 파괴할 수 있습니다. 이 과정에서 전문 의료진의 판단이 굉장히 중요합니다.</p>
+          <p>반복 치료가 필요한 이유 리팟레이저의 효과는 단 한 번의 치료가 아닌 여러 번의 반복적인 치료를 통해 극대화됩니다. 많은 환자분들이 치료 후 즉각적인 효과를 보고 걱정 없이 치료를 종료하시는 경우가 있지만, 이는 다시 흑자가 생길 가능성을 높입니다. 따라서 치료 후에도 지속적인 관리가 필요합니다.</p>
+          <p>의료진의 역할 흑자 제거에서 실질적으로 어떤 의료진을 선택하느냐는 정말 중요합니다. 저희 테라스의원에서는 환자 개개인에 맞춘 치료 계획을 세우고, 전문적인 진단을 통해 적절한 치료를 지속적으로 진행합니다. 치료 고려를 하시는 분들께서는 꼭 한 번 방문해 보시고, 개인 맞춤 상담을 받아보세요. 여러분에게 도움이 되길 바랍니다! 😊 --- 테라스의원 서울 종로구 송월길 99 경희궁자이2단지 205동상가 2층 연락처: 02-1234-5678 모든 치료에는 개인차가 있으며, 부작용 발생 가능성이 있습니다.</p>
+        </div>
+        <div style="font-size:11px;color:#3B5BDB;margin-top:6px;cursor:pointer">전체 보기 ↓</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- SEO 점수 -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:#4A5568;margin-bottom:8px">SEO 점수</div>
+        <div class="seo-bar">
+          <span id="seo-total-score" style="font-size:22px;font-weight:700;color:#2F9E44">95</span>
+          <div class="seo-track"><div class="seo-fill" id="seo-score-fill" style="width:95%"></div></div>
+          <span id="seo-score-summary" style="font-size:11px;color:#4A5568">실제 발행 대기 글의 SEO 평가 결과를 반영했습니다.</span>
+        </div>
+        <div class="seo-breakdown" id="seoScoreBreakdown">
+          <div class="seo-breakdown-head">
+            <div class="seo-breakdown-title">SEO 세부 평가</div>
+            <span class="badge b-green" id="seo-score-badge">총점 95점</span>
+          </div>
+          <div class="seo-score-items" id="seoScoreItems">
+            <div class="seo-score-item">
+              <div class="seo-score-top"><span class="seo-score-name">제목 키워드</span><span class="seo-score-val">18/20</span></div>
+              <div class="seo-score-copy">흑자 치료와 시술/상담 의도가 제목에 드러나 검색 맥락이 분명합니다.</div>
+            </div>
+            <div class="seo-score-item">
+              <div class="seo-score-top"><span class="seo-score-name">본문 키워드</span><span class="seo-score-val">17/20</span></div>
+              <div class="seo-score-copy">슈링크 효과, 울쎄라600샷가격, 울쎄라 정품 인증 키워드가 본문에 자연스럽게 포함되어 있습니다.</div>
+            </div>
+            <div class="seo-score-item">
+              <div class="seo-score-top"><span class="seo-score-name">메타 설명</span><span class="seo-score-val">14/15</span></div>
+              <div class="seo-score-copy">테라스의원의 상담 기준과 주의사항이 요약되어 있습니다.</div>
+            </div>
+            <div class="seo-score-item">
+              <div class="seo-score-top"><span class="seo-score-name">이미지 ALT</span><span class="seo-score-val">12/15</span></div>
+              <div class="seo-score-copy">테라스의원 대표 이미지, 리팟레이저 대표 이미지 설명을 기반으로 이미지 대체 문구를 구성합니다.</div>
+            </div>
+            <div class="seo-score-item">
+              <div class="seo-score-top"><span class="seo-score-name">가독성</span><span class="seo-score-val">14/15</span></div>
+              <div class="seo-score-copy">문단 길이와 상담형 흐름이 블로그 발행용으로 무난합니다.</div>
+            </div>
+            <div class="seo-score-item">
+              <div class="seo-score-top"><span class="seo-score-name">발행 준비도</span><span class="seo-score-val">10/10</span></div>
+              <div class="seo-score-copy">본문, 이미지 배치, 발행 요청 상태가 준비되어 있습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 이미지 선택 -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:#4A5568;margin-bottom:8px">이미지 <span style="color:#9AA0B4;font-weight:400">· 발행할 이미지를 선택하세요</span></div>
+        <div id="content-image-list" class="content-image-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px">
+          <div class="img-card selected">
+            <div class="img-thumb"><img src="assets/blog-post/image-1-terrace-main.png" alt="테라스의원 대표 이미지" loading="lazy"></div>
+            <div class="img-label"><span class="img-label-text"><span class="img-label-main">이미지 1</span><span class="img-label-desc">테라스의원 대표 이미지</span></span><div class="sel-dot"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div></div>
+          </div>
+          <div class="img-card">
+            <div class="img-thumb"><img src="assets/blog-post/image-2-repot-main.png" alt="리팟레이저 대표 이미지" loading="lazy"></div>
+            <div class="img-label"><span class="img-label-text"><span class="img-label-main">이미지 2</span><span class="img-label-desc">리팟레이저 대표 이미지</span></span></div>
+          </div>
+          <div class="img-card">
+            <div class="img-thumb"><img src="assets/blog-post/image-3-repot-principle.png" alt="리팟레이저 원리 대표 이미지" loading="lazy"></div>
+            <div class="img-label"><span class="img-label-text"><span class="img-label-main">이미지 3</span><span class="img-label-desc">리팟레이저 원리 대표 이미지</span></span></div>
+          </div>
+          <div class="img-card">
+            <div class="img-thumb"><img src="assets/blog-post/image-4-repot-care.png" alt="리팟레이저 지속관리 대표 이미지" loading="lazy"></div>
+            <div class="img-label"><span class="img-label-text"><span class="img-label-main">이미지 4</span><span class="img-label-desc">리팟레이저 지속관리 대표 이미지</span></span></div>
+          </div>
+          <div class="img-card">
+            <div class="img-thumb is-notice"><img src="assets/blog-post/image-5-medical-notice.png" alt="테라스의원 푸터 의료법 준수 이미지" loading="lazy"></div>
+            <div class="img-label"><span class="img-label-text"><span class="img-label-main">이미지 5</span><span class="img-label-desc">테라스의원 푸터 의료법 준수 이미지</span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 액션 바 -->
+  <div class="action-bar">
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" id="regenerate-text-btn"><span class="icon-refresh-cw" data-icon="refresh-cw" data-size="12" data-color="currentColor"></span> 글 재생성</button>
+      <button class="btn btn-ghost btn-sm" id="regenerate-images-btn"><span class="icon-refresh-cw" data-icon="refresh-cw" data-size="12" data-color="currentColor"></span> 이미지 재생성</button>
+      <button class="btn btn-ghost btn-sm" id="seo-rescore-btn"><span class="icon-search" data-icon="search" data-size="12" data-color="currentColor"></span> SEO 재평가</button>
+      <button class="btn btn-danger btn-sm">취소</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" data-flow-target="modal:schedule-publish" data-flow-label="상태: 발행 일시 모달">일시 지정 발행 요청</button>
+      <button class="btn btn-primary" id="request-publish-btn" data-flow-target="10_블로그_발행대기_상세.html" data-flow-label="다음: 발행 대기">바로 발행 요청</button>
+    </div>
+  </div>
+</div>
+
+<!-- 일시 지정 모달 -->
+<div id="modal-schedule" class="modal-backdrop" style="display:none">
+  <div class="modal modal-sm">
+    <div class="modal-title">발행 일시 지정</div>
+    <div class="modal-desc">대행사에 발행을 요청할 일시를 지정해 주세요.</div>
+    <div class="modal-field">
+      <label>발행 희망 일시</label>
+      <input type="text" value="2026.06.01 10:00" style="width:100%">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost">취소</button>
+      <button class="btn btn-primary" id="schedule-request-publish-btn" data-flow-target="10_블로그_발행대기_상세.html" data-flow-label="다음: 발행 대기">발행 요청</button>
+    </div>
+  </div>
+</div>
+
+<!-- 취소 확인 모달 -->
+<div id="modal-cancel" class="modal-backdrop" style="display:none">
+  <div class="modal modal-sm">
+    <div class="modal-title">콘텐츠 발행을 취소할까요?</div>
+    <div class="modal-desc">이 콘텐츠를 취소하면 발행 요청을 할 수 없습니다. 계속하시겠습니까?</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost">돌아가기</button>
+      <button class="btn btn-danger">취소 확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 블로그 적용 미리보기 모달 -->
+<div id="modal-blog-preview" class="modal-backdrop" style="display:flex">
+  <div class="modal blog-preview-modal">
+    <div class="blog-preview-head">
+      <div>
+        <div class="blog-preview-title">블로그 적용 미리보기</div>
+        <div class="blog-preview-sub">선택 이미지와 본문 이미지 슬롯이 블로그 화면에서 어떻게 보이는지 확인합니다.</div>
+      </div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm">닫기</button><button class="btn btn-primary btn-sm" id="preview-publish-request">바로 발행 요청</button></div>
+    </div>
+    <div class="blog-preview-scroll">
+      <div class="blog-preview-shell">
+        <article class="blog-preview-article">
+          <h1 id="blogPreviewTitle">리팟레이저로 흑자 제거 효과없나요? 원인은 반복치료 때문입니다.</h1>
+          <div class="blog-preview-meta" id="blogPreviewMeta">
+            <span class="blog-preview-author-avatar">TERRACE<br>CLINIC</span>
+            <span class="blog-preview-author-name">권유정 대표원장</span>
+            <span class="blog-preview-meta-divider">·</span>
+            <span class="blog-preview-meta-date">2026. 6. 16 09:18</span>
+          </div>
+          <div class="blog-preview-body" id="blogPreviewBody">
+            <section class="blog-preview-section">
+              <h2>리팟레이저 흑자 제거 방법 상담 전 확인할 점</h2>
+              <p>안녕하세요. 테라스의원 대표원장 권유정입니다. 흑자 제거를 위해 리팟레이저를 고려하시며, 효과에 대한 의문을 품고 계실 거라 생각합니다. 리팟레이저는 최근 흑자 제거에 대한 매우 강력한 치료 장비로 많은 분들이 찾고 있습니다. 하지만 많은 환자분들이 &quot;리팟레이저 치료 후에도 흑자가 다시 생기면 어쩌나&quot;라고 걱정하시는 모습을 봅니다. 이러한 의문이 생기는 이유는 여러 요소들 때문인데요, 오늘은 리팟레이저가 흑자 제거에 뛰어난 이유와 이를 사용하면서 주의해야 할 점들을 퍼스널하게 안내드리겠습니다.</p>
+            </section>
+            <figure class="blog-preview-image" data-image-slot="1">
+              <img src="assets/blog-post/image-1-terrace-main.png" alt="테라스의원 대표 이미지" loading="lazy">
+              <figcaption><strong>이미지 1</strong><span>테라스의원 대표 이미지</span></figcaption>
+            </figure>
+            <section class="blog-preview-section">
+              <h2>리팟레이저란 무엇인가요?</h2>
+              <p>리팟레이저는 멜라닌 색소에 선택적으로 작용하여 색소를 제거하는 데 도움을 주는 레이저 장비입니다. 이 장비는 주변 피부에는 최소한의 영향을 미치면서도 강력한 흑자 제거 효과를 자랑합니다.</p>
+            </section>
+            <figure class="blog-preview-image" data-image-slot="2">
+              <img src="assets/blog-post/image-2-repot-main.png" alt="리팟레이저 대표 이미지" loading="lazy">
+              <figcaption><strong>이미지 2</strong><span>리팟레이저 대표 이미지</span></figcaption>
+            </figure>
+            <section class="blog-preview-section">
+              <h2>흑자 제거의 원리</h2>
+              <p>흑자는 진피층까지 침투하는 색소성 질환으로, 단순한 제거가 어려운 난치병입니다. 리팟레이저는 강력한 에너지를 사용해 피부 깊숙이 있는 멜라닌 세포를 효과적으로 파괴할 수 있습니다. 이 과정에서 전문 의료진의 판단이 굉장히 중요합니다.</p>
+            </section>
+            <figure class="blog-preview-image" data-image-slot="3">
+              <img src="assets/blog-post/image-3-repot-principle.png" alt="리팟레이저 원리 대표 이미지" loading="lazy">
+              <figcaption><strong>이미지 3</strong><span>리팟레이저 원리 대표 이미지</span></figcaption>
+            </figure>
+            <section class="blog-preview-section">
+              <h2>반복 치료가 필요한 이유</h2>
+              <p>리팟레이저의 효과는 단 한 번의 치료가 아닌 여러 번의 반복적인 치료를 통해 극대화됩니다. 많은 환자분들이 치료 후 즉각적인 효과를 보고 걱정 없이 치료를 종료하시는 경우가 있지만, 이는 다시 흑자가 생길 가능성을 높입니다. 따라서 치료 후에도 지속적인 관리가 필요합니다.</p>
+            </section>
+            <figure class="blog-preview-image" data-image-slot="4">
+              <img src="assets/blog-post/image-4-repot-care.png" alt="리팟레이저 지속관리 대표 이미지" loading="lazy">
+              <figcaption><strong>이미지 4</strong><span>리팟레이저 지속관리 대표 이미지</span></figcaption>
+            </figure>
+            <section class="blog-preview-section">
+              <h2>의료진의 역할</h2>
+              <p>흑자 제거에서 실질적으로 어떤 의료진을 선택하느냐는 정말 중요합니다. 저희 테라스의원에서는 환자 개개인에 맞춘 치료 계획을 세우고, 전문적인 진단을 통해 적절한 치료를 지속적으로 진행합니다. 치료 고려를 하시는 분들께서는 꼭 한 번 방문해 보시고, 개인 맞춤 상담을 받아보세요. 여러분에게 도움이 되길 바랍니다! 😊</p>
+              <div class="blog-preview-footer">테라스의원
+서울 종로구 송월길 99 경희궁자이2단지 205동상가 2층
+연락처: 02-1234-5678
+모든 치료에는 개인차가 있으며, 부작용 발생 가능성이 있습니다.</div>
+            </section>
+            <figure class="blog-preview-image is-notice" data-image-slot="5">
+              <img src="assets/blog-post/image-5-medical-notice.png" alt="테라스의원 푸터 의료법 준수 이미지" loading="lazy">
+              <figcaption><strong>이미지 5</strong><span>테라스의원 푸터 의료법 준수 이미지</span></figcaption>
+            </figure>
+          </div>
+        </article>
+        <aside class="blog-preview-sidebar" id="blogPreviewImages">
+          <div class="blog-preview-side-card">
+            <div class="blog-preview-side-title">적용 이미지</div>
+            <div class="blog-preview-thumb"><img src="assets/blog-post/image-1-terrace-main.png" alt="테라스의원 대표 이미지" loading="lazy"><span>이미지 1 · 테라스의원 대표 이미지</span></div>
+            <div class="blog-preview-thumb"><img src="assets/blog-post/image-2-repot-main.png" alt="리팟레이저 대표 이미지" loading="lazy"><span>이미지 2 · 리팟레이저 대표 이미지</span></div>
+            <div class="blog-preview-thumb"><img src="assets/blog-post/image-3-repot-principle.png" alt="리팟레이저 원리 대표 이미지" loading="lazy"><span>이미지 3 · 리팟레이저 원리 대표 이미지</span></div>
+            <div class="blog-preview-thumb"><img src="assets/blog-post/image-4-repot-care.png" alt="리팟레이저 지속관리 대표 이미지" loading="lazy"><span>이미지 4 · 리팟레이저 지속관리 대표 이미지</span></div>
+            <div class="blog-preview-thumb is-notice"><img src="assets/blog-post/image-5-medical-notice.png" alt="테라스의원 푸터 의료법 준수 이미지" loading="lazy"><span>이미지 5 · 테라스의원 푸터 의료법 준수 이미지</span></div>
+          </div>
+          <div class="blog-preview-side-card">
+            <div class="blog-preview-side-title">SEO 요약</div>
+            <div style="font-size:12px;color:#4A5568;line-height:1.6">총점 95점 · 실제 발행 대기 글의 SEO 평가 결과를 반영했습니다.</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div></div>
+<script src="icons.js"></script>
+<script defer src="demo.js?v=20260617-guide-copy-2"></script>
+</body>
+</html>
