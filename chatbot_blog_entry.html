@@ -332,19 +332,11 @@
 서울 종로구 송월길 99 경희궁자이2단지 205동상가 2층
 연락처: 02-6105-0010
 모든 치료에는 개인차가 있으며, 부작용 발생 가능성이 있습니다.</div>
-            <a id="chatbot-use-banner" class="chatbot-blog-banner" href="chatbot_live.html" aria-label="테라스의원 챗봇 이용하기">
-                <span class="chatbot-blog-banner-brand"><span class="chatbot-blog-banner-mark">T</span>테라스의원</span>
-                <span class="chatbot-blog-banner-copy">
-                  <strong>궁금한 점, 챗봇에게 바로 물어보세요</strong>
-                  <span>내게 맞는 시술 상담부터 예약 안내까지 빠르게 도와드려요</span>
-                </span>
-                <span class="chatbot-blog-banner-bot" aria-hidden="true">
-                  <span class="chatbot-blog-bubble one"></span>
-                  <span class="chatbot-blog-bubble two"></span>
-                  <span class="chatbot-blog-face">☺</span>
-                </span>
-                <span class="chatbot-blog-banner-button">챗봇 이용하러 가기 <span aria-hidden="true">›</span></span>
+            <div class="chatbot-blog-banner-spacer" data-chatbot-banner-spacer="before" aria-hidden="true"><br><br><br><br></div>
+              <a id="chatbot-use-banner" class="chatbot-blog-banner" href="chatbot_live.html" aria-label="테라스의원 챗봇 이용하기">
+                <img src="assets/blog-post/chatbot-terrace-banner.png" alt="테라스의원 챗봇 상담 배너" width="2804" height="561" loading="eager">
               </a>
+              <div class="chatbot-blog-banner-spacer" data-chatbot-banner-spacer="after" aria-hidden="true"><br><br><br><br></div>
             </section>
             <figure class="blog-preview-image is-notice" data-image-slot="5">
               <img src="assets/blog-post/image-5-medical-notice.png" alt="테라스의원 푸터 의료법 준수 이미지" loading="lazy">
@@ -386,26 +378,11 @@
 .chatbot-blog-entry-page .blog-preview-shell{display:block!important;max-width:940px!important;margin:0 auto!important}
 .chatbot-blog-entry-page .blog-preview-sidebar{display:none!important}
 .chatbot-blog-entry-page .blog-preview-article{border:0!important;border-radius:0!important;box-shadow:0 16px 42px rgba(26,26,46,.08)!important;padding:52px 64px 68px!important}
-.chatbot-blog-banner{display:grid!important;grid-template-columns:minmax(0,1fr) 150px 210px!important;grid-template-areas:"brand bot button" "copy bot button"!important;align-items:center!important;gap:8px 28px!important;margin:22px 0 44px!important;padding:30px 34px!important;min-height:168px!important;border-radius:8px!important;background:linear-gradient(100deg,#fff 0%,#fffdf8 52%,#f5f1e8 100%)!important;border:1px solid #EFE7DA!important;box-shadow:0 18px 38px rgba(26,26,46,.11)!important;text-decoration:none!important;color:#1A2438!important;overflow:hidden!important;position:relative!important}
-.chatbot-blog-banner:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 76% 26%,rgba(132,148,116,.18),transparent 24%),radial-gradient(circle at 96% 74%,rgba(219,210,190,.36),transparent 28%);pointer-events:none}
-.chatbot-blog-banner-brand{grid-area:brand;position:relative;display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:800;letter-spacing:0;color:#17213A}
-.chatbot-blog-banner-mark{width:28px;height:28px;border:1px solid #D2AA74;color:#B98645;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:900}
-.chatbot-blog-banner-copy{grid-area:copy;position:relative;display:grid;gap:12px}
-.chatbot-blog-banner-copy strong{font-size:29px;line-height:1.35;font-weight:900;letter-spacing:0;color:#17213A;word-break:keep-all}
-.chatbot-blog-banner-copy span{font-size:16px;line-height:1.65;font-weight:600;color:#777B84;word-break:keep-all}
-.chatbot-blog-banner-bot{grid-area:bot;position:relative;width:134px;height:134px;border-radius:999px;background:#EEF0E5;display:flex;align-items:center;justify-content:center}
-.chatbot-blog-face{width:82px;height:82px;border:6px solid #576075;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;color:#17213A;box-shadow:0 9px 16px rgba(26,26,46,.12)}
-.chatbot-blog-bubble{position:absolute;background:#fff;border-radius:999px;box-shadow:0 10px 20px rgba(26,26,46,.1)}
-.chatbot-blog-bubble.one{width:80px;height:48px;left:-30px;top:-18px}
-.chatbot-blog-bubble.two{width:60px;height:36px;right:-34px;top:28px;background:#B9C1AA}
-.chatbot-blog-banner-button{grid-area:button;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:64px;padding:0 22px;border-radius:8px;background:#14213A;color:#fff;font-size:18px;font-weight:900;letter-spacing:0;white-space:nowrap;box-shadow:0 10px 20px rgba(20,33,58,.18)}
-.chatbot-blog-banner-button span{font-size:30px;line-height:1;font-weight:500}
+.chatbot-blog-banner-spacer{display:block!important;font-size:15px!important;line-height:2!important}
+.chatbot-blog-banner{display:block!important;width:100%!important;margin:0!important;border-radius:8px!important;text-decoration:none!important;overflow:hidden!important;box-shadow:0 18px 38px rgba(26,26,46,.1)!important}
+.chatbot-blog-banner img{display:block!important;width:100%!important;height:auto!important;border-radius:8px!important}
 @media(max-width:760px){
   .chatbot-blog-entry-page .blog-preview-article{padding:30px 20px 42px!important}
-  .chatbot-blog-banner{grid-template-columns:1fr!important;grid-template-areas:"brand" "copy" "bot" "button"!important;padding:24px!important;text-align:left!important}
-  .chatbot-blog-banner-copy strong{font-size:24px}
-  .chatbot-blog-banner-bot{justify-self:center}
-  .chatbot-blog-banner-button{width:100%;font-size:16px}
 }
 </style></div></div>
 <script src="icons.js"></script>
