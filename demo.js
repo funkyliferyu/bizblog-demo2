@@ -160,7 +160,7 @@
       page: 'chatbot_reviews_embedding.html',
       label: 'reviews 문서 벡터 임베딩 설정',
       target: null,
-      guide: '방문자 리뷰 문서가 청크 크기 800, 오버랩 200, 총 849개 기준으로 임베딩되었습니다. OCR 반영 청크와 더보기 구조를 확인한 뒤 실제 챗봇 화면으로 이동합니다.',
+      guide: '방문자 리뷰 문서가 청크 크기 800, 오버랩 200, 총 849개 기준으로 임베딩되었습니다. 리뷰 내용과 오버랩 구성을 확인한 뒤 실제 챗봇 화면으로 이동합니다.',
       guideCta: '챗봇 구현 확인하기',
       guidePosition: 'top-right',
       next: 'chatbot_live.html'
