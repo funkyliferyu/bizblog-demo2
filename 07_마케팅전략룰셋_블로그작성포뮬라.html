@@ -696,7 +696,7 @@
           <div class="formula-v2-panel-body">
             <div class="formula-v2-field full">
               <label for="v2TopicBriefLibrary">토픽 브리프 라이브러리</label>
-              <select id="v2TopicBriefLibrary" onchange="applyTopicBriefSet(this.value)"><option value="0" selected>흑자 치료의 접근 방식 · 흑자 치료</option><option value="1" >흑자 재발 예방 · 흑자 재발</option><option value="2" >써마지 시술 효과 차별성 · 써마지</option><option value="3" >연령대별 피부 관리 법 · 연령대별 피부관리</option><option value="4" >리팟레이저 흑자 제거 방법 · 리팟레이저</option></select>
+              <select id="v2TopicBriefLibrary" onchange="applyTopicBriefSet(this.value)"><option value="0" selected>흑자 치료의 접근 방식 · 흑자 치료</option><option value="1" >흑자 재발 예방 · 흑자 재발</option><option value="2" >써마지 시술 효과 차별성 · 써마지</option><option value="3" >연령대별 피부 관리 법 · 연령대별 피부관리</option><option value="4" >리팟레이저 흑자 제거 방법 · 리팟레이저</option><option value="5" >대표원장 직접 상담 기준 · 피부과 상담</option><option value="6" >프라이빗 1인실 진료 경험 · 프라이빗 피부과</option><option value="7" >시술 전 피부 진단 체크리스트 · 피부 진단</option><option value="8" >시술 후 회복기 관리 루틴 · 피부 시술 후 관리</option></select>
             </div>
             <div class="formula-v2-actions" style="margin:8px 0 12px">
               <button type="button" class="btn btn-ghost btn-sm" id="v2TopicBriefExtendButton" style="display:none">더 많은 블로그에서 포뮬라 생성</button>
@@ -881,7 +881,28 @@
 
 
 
-</div></div>
+
+<script>
+window.TOPIC_BRIEFS = [{"topic":"흑자 치료의 접근 방식","mainKeyword":"흑자 치료","secondaryKeywords":["리팟레이저","흑자 유형","보편적 치료법의 한계","개인 맞춤 관리"],"targetReader":"흑자 해결책을 찾는 환자들","coreConcern":"흑자 치료에 대한 감정과 불신","mainAngle":"정확한 피부 분석을 통한 맞춤 치료의 필요성 강조","mustInclude":["흑자를 구분하는 방법 설명","정확한 치료를 위한 접근 방식 제시","리팟레이저 치료의 장점"],"mustAvoid":["모든 환자에 동일한 치료 적용","부정확한 정보 제공","걱정과 두려움을 조성하는 언급"],"ctaDirection":"정확한 진단을 위해 테라스의원에 방문해 보세요.","confidence":0.7,"status":"candidate"},{"topic":"흑자 재발 예방","mainKeyword":"흑자 재발","secondaryKeywords":["리팟레이저","흑자 치료후 관리","피부 재발","콜라겐 재활"],"targetReader":"흑자 치료 경험이 있는 환자","coreConcern":"흑자의 재발 원인과 예방 방법","mainAngle":"흑자 재발을 방지하기 위한 통합적 접근법 소개","mustInclude":["흑자 치료의 중요성 재강조","재발 예방을 위한 관리 방법","의사의 의견과 경험 공유"],"mustAvoid":["모든 치료에서 효과 보장","과장된 결과 진술","비하적 표현"],"ctaDirection":"상담을 통해 흑자 치료의 올바른 길을 안내받아 보세요.","confidence":0.7,"status":"candidate"},{"topic":"써마지 시술 효과 차별성","mainKeyword":"써마지","secondaryKeywords":["시술 과정","효과적인 관리","피부 과학","리프팅"],"targetReader":"써마지 시술에 관심 있는 환자","coreConcern":"써마지가 효과적으로 체계화된 이유와 관리의 중요성","mainAngle":"써마지 시술의 차별성과 세심한 관리 강조","mustInclude":["써마지의 과학적인 접근 설명","시술 전후 관리의 중요성 제시","환자 사례 공유"],"mustAvoid":["모든 시술에서 효과 보장","비하적 표현","경쟁 병원 비방"],"ctaDirection":"시술 상담을 통해 자신에게 맞는 써마지 방법을 찾아보세요.","confidence":0.7,"status":"candidate"},{"topic":"연령대별 피부 관리 법","mainKeyword":"연령대별 피부관리","secondaryKeywords":["피부 고민","맞춤형 관리","전문의 상담","피부 특징"],"targetReader":"연령대에 따른 최적의 피부 관리를 원하시는 분들","coreConcern":"각 연령대별 피부 관리의 필요성과 중요성","mainAngle":"각 연령대의 피부 특징 및 맞춤 관리법 소개","mustInclude":["20대, 30대, 40대별 피부 특징","연령대에 맞는 관리 방법 제시","정밀 피부 진단의 필요성"],"mustAvoid":["모든 연령대에 통하는 미신적인 관리법","일반화된 표현","의료적 조언이 아닌 비전문적 의견"],"ctaDirection":"테라스의원의 전문 상담을 통해 맞춤형 관리 전략을 세워보세요.","confidence":0.7,"status":"candidate"},{"topic":"리팟레이저 흑자 제거 방법","mainKeyword":"리팟레이저","secondaryKeywords":["흑자 제거","레이저 치료","반복 치료","색소 질환"],"targetReader":"흑자 제거에 고민이 있는 환자들","coreConcern":"리팟레이저의 효과성과 사용 시 주의사항","mainAngle":"리팟레이저로 흑자를 효과적으로 제거하는 방법과 과정","mustInclude":["리팟레이저의 작용 원리 설명","치료 시 고려해야 할 사항","의료진의 역할 강조"],"mustAvoid":["모든 환자에게 동일한 결과 보장","부정확한 정보 제공","단순히 비용 문제로만 접근"],"ctaDirection":"테라스의원으로 방문해 개인 맞춤 치료를 상담받아보세요.","confidence":0.7,"status":"candidate"},{"topic":"대표원장 직접 상담 기준","mainKeyword":"피부과 상담","secondaryKeywords":["대표원장 상담","상담실장 없는 피부과","맞춤 진료","시술 계획"],"targetReader":"시술 전 충분한 설명과 의료진 상담을 중요하게 생각하는 환자","coreConcern":"상담 과정에서 내 피부 상태가 충분히 반영되는지에 대한 불안","mainAngle":"대표원장이 직접 진단하고 설명하는 상담 구조가 맞춤 시술 계획으로 이어지는 점 강조","mustInclude":["상담 전 피부 상태 확인 과정","의료진이 직접 설명해야 하는 이유","불필요한 시술 권유를 줄이는 판단 기준"],"mustAvoid":["상담만으로 치료 효과 보장","타 병원 상담 방식 비방","과도한 공포 조성"],"ctaDirection":"내 피부 상태에 맞는 계획이 필요한 분은 테라스의원에서 직접 상담을 받아보세요.","confidence":0.7,"status":"candidate"},{"topic":"프라이빗 1인실 진료 경험","mainKeyword":"프라이빗 피부과","secondaryKeywords":["1인실 진료","광화문 피부과","개인 공간","편안한 상담"],"targetReader":"대기와 노출 부담 없이 차분하게 상담받고 싶은 환자","coreConcern":"피부 고민을 타인에게 노출하지 않고 편안하게 진료받고 싶은 마음","mainAngle":"프라이빗 공간이 상담 집중도와 진료 경험에 주는 장점을 설명","mustInclude":["1인실 중심 공간 구성","개인 피부 고민을 편하게 말할 수 있는 환경","공간 경험과 진료 만족도의 연결"],"mustAvoid":["고급스러움만 강조하는 표현","효과와 공간을 직접적으로 연결","불안감을 자극하는 비교"],"ctaDirection":"조용한 상담 환경에서 피부 고민을 나누고 싶다면 테라스의원에 문의해 보세요.","confidence":0.7,"status":"candidate"},{"topic":"시술 전 피부 진단 체크리스트","mainKeyword":"피부 진단","secondaryKeywords":["피부 타입","시술 전 체크","색소와 탄력","맞춤 시술"],"targetReader":"어떤 시술이 맞는지 결정하기 어려운 환자","coreConcern":"유명한 시술을 받아도 내 피부에 맞지 않으면 효과가 떨어질 수 있다는 걱정","mainAngle":"시술명보다 피부 상태와 목표를 먼저 확인해야 한다는 진단 중심 관점 제시","mustInclude":["피부 두께와 탄력 상태 확인","색소·홍조·건조 등 동반 고민 점검","상담에서 질문해야 할 체크포인트"],"mustAvoid":["자가진단으로 시술 결정 유도","특정 시술 일괄 추천","의학적 진단을 단정하는 표현"],"ctaDirection":"시술 선택이 고민된다면 먼저 테라스의원에서 피부 상태를 확인해 보세요.","confidence":0.7,"status":"candidate"},{"topic":"시술 후 회복기 관리 루틴","mainKeyword":"피부 시술 후 관리","secondaryKeywords":["시술 후 주의사항","자외선 차단","보습 관리","재생 관리"],"targetReader":"시술 후 일상관리와 주의사항을 알고 싶은 환자","coreConcern":"시술 후 관리가 부족해 자극이나 색소침착이 생기지 않을까 하는 걱정","mainAngle":"시술 효과보다 회복기 관리 원칙과 의료진 안내의 중요성 강조","mustInclude":["자외선 차단과 보습 관리","시술별 주의사항은 의료진 안내를 따를 것","이상 반응 시 병원에 문의해야 한다는 안내"],"mustAvoid":["모든 시술에 동일한 회복 루틴 적용","부작용 가능성 축소","홈케어만으로 치료 대체 가능하다는 표현"],"ctaDirection":"시술 후 관리가 걱정된다면 테라스의원에서 회복기 안내까지 함께 상담받아 보세요.","confidence":0.7,"status":"candidate"}];
+window.applyTopicBriefSet = function applyTopicBriefSet(index) {
+  var brief = window.TOPIC_BRIEFS[Number(index)] || window.TOPIC_BRIEFS[0];
+  if (!brief) return;
+  function setValue(id, value) {
+    var field = document.getElementById(id);
+    if (!field) return;
+    field.value = Array.isArray(value) ? value.join(', ') : (value || '');
+  }
+  setValue('v2-topic', brief.topic);
+  setValue('v2-main-keyword', brief.mainKeyword);
+  setValue('v2-secondary-keywords', brief.secondaryKeywords);
+  setValue('v2-target-reader', brief.targetReader);
+  setValue('v2-core-concern', brief.coreConcern);
+  setValue('v2-main-angle', brief.mainAngle);
+  setValue('v2-must-include', brief.mustInclude);
+  setValue('v2-must-avoid', brief.mustAvoid);
+  setValue('v2-cta-direction', brief.ctaDirection);
+};
+</script></div></div>
 <script src="icons.js"></script>
 <script defer src="demo.js?v=20260624-chatbot-auto-link"></script>
 </body>
