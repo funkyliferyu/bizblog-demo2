@@ -116,7 +116,7 @@
     },
     {
       page: 'chatbot_rag_ready.html',
-      label: '챗봇용 RAG 문서 생성 준비',
+      label: '챗봇용 RAG 문서 생성 요청',
       target: { selector: '#rag-generate-button', text: '챗봇용 RAG 문서 생성' },
       scrollTarget: true,
       guide: '테라스의원 매장 등록과 콘텐츠 학습이 완료된 상태입니다. [챗봇용 RAG 문서 생성]을 눌러 챗봇 지식 문서를 만듭니다.',
@@ -124,7 +124,7 @@
     },
     {
       page: 'chatbot_rag_generated.html',
-      label: 'RAG 문서 생성 결과',
+      label: 'RB dialog 연동 챗봇 생성',
       target: { selector: '#chatbot-create-button', text: '챗봇 생성하기' },
       scrollTarget: true,
       guide: "챗봇용 RAG 문서 2개가 생성되었습니다. 각 문서의 내용을 확인한 뒤 '챗봇 생성하기'를 선택해 RB dialog와 연동합니다.",
@@ -134,7 +134,7 @@
       page: 'chatbot_rag_download_modal.html',
       label: '챗봇 초기 설정 완료',
       target: { selector: '#download-confirm-button', text: '연동 확인' },
-      guide: 'RAG 문서 기반 챗봇 연동 초기 설정 완료 팝업입니다. [연동 확인]을 누르면 RB Dialog 지식 관리 메뉴로 이동합니다.',
+      guide: 'RAG 문서 기반 챗봇 연동 초기 설정이 완료되었습니다. [연동 확인]을 누르면 RB Dialog 지식 관리 메뉴로 이동합니다.',
       next: 'chatbot_knowledge_list.html'
     },
     {
@@ -146,7 +146,7 @@
     },
     {
       page: 'chatbot_info_embedding.html',
-      label: 'info 문서 벡터 임베딩 설정',
+      label: 'info 문서 벡터 임베딩 설정 조회',
       target: null,
       guide: '업체 정보 문서가 청크 크기 500, 오버랩 100, 총 10개 청크로 임베딩되었습니다. 문서 내용과 오버랩 구성을 확인한 뒤 리뷰 문서 설정으로 이동합니다.',
       guideCta: '리뷰파일 보러가기',
@@ -155,7 +155,7 @@
     },
     {
       page: 'chatbot_reviews_embedding.html',
-      label: 'reviews 문서 벡터 임베딩 설정',
+      label: 'reviews 문서 벡터 임베딩 설정 조회',
       target: null,
       guide: '방문자 리뷰 문서가 청크 크기 800, 오버랩 200, 총 849개 기준으로 임베딩되었습니다. 리뷰 내용과 오버랩 구성을 확인한 뒤 실제 챗봇 화면으로 이동합니다.',
       guideCta: '챗봇 구현 확인하기',
@@ -164,7 +164,7 @@
     },
     {
       page: 'chatbot_live.html',
-      label: '실제 챗봇 이용',
+      label: '챗봇 구동 확인',
       target: null,
       guide: '실제 RB Dialog 챗봇입니다. 화면 안의 챗봇에서 테라스의원 관련 질문을 직접 확인할 수 있습니다.',
       guidePosition: 'top-right',
