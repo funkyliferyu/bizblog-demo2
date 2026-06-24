@@ -86,8 +86,8 @@
     {
       page: '02_블로그관리_생성완료.html',
       label: '자동생성 블로그 목록 조회',
-      target: { selector: '#blog-post-list tr', text: '리팟레이저로' },
-      guide: '자동생성 설정에 따라 블로그 글이 생성되었습니다. 승인대기 상태의 블로그를 선택해 내용을 확인합니다.',
+      target: { selector: '#blog-post-list tr', text: '서대문리팟레이저병원' },
+      guide: '자동생성 설정에 따라 블로그 글이 생성되었습니다. 승인대기 상태의 첫 포스팅 항목을 선택해 내용을 확인합니다.',
       next: '09_AI콘텐츠생성_상세.html'
     },
     {
