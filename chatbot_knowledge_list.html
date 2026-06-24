@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RB Dialog 지식 관리 목록 · 비즈플래닛 마케팅 채널관리 데모</title>
+<title>RB Dialog 지식 관리 연동 확인 · 비즈플래닛 마케팅 채널관리 데모, 챗봇 연동</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles/base.css" />
 <link rel="stylesheet" href="demo.css" />
@@ -27,13 +27,13 @@
   .search-row{display:grid;grid-template-columns:1fr 354px;align-items:center;margin-bottom:14px}
   .search-box{height:40px;background:#f0f2f5;color:#b0b4bd;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:15px}
   .search-box span{font-size:27px;color:#1d222b;line-height:1}
-  .knowledge-table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{height:41px;border-top:1px solid #e7e9ef;text-align:left;padding:0 36px;color:#1f2733}
+  .knowledge-table{width:100%;min-width:880px;border-collapse:collapse;font-size:14px;table-layout:auto}
+  th,td{height:41px;border-top:1px solid #e7e9ef;text-align:left;padding:0 16px;color:#1f2733;white-space:nowrap;vertical-align:middle}
   th{color:#b0b4bd;font-size:12px;font-weight:900}
-  td:nth-child(1),th:nth-child(1){width:54%}td:nth-child(3),th:nth-child(3){text-align:center}
+  td:nth-child(1),th:nth-child(1){width:42%}td:nth-child(2),th:nth-child(2){width:13%}td:nth-child(3),th:nth-child(3){width:13%;text-align:center}td:nth-child(4),th:nth-child(4){width:18%}td:nth-child(5),th:nth-child(5){width:14%}
   .knowledge-row{cursor:pointer}.knowledge-row:hover{background:#f7f9ff}
   .pager{width:30px;height:32px;background:#3468f6;color:#fff;display:flex;align-items:center;justify-content:center;margin:36px auto 0;font-weight:800}
-  @media(max-width:900px){.knowledge-nav{overflow:auto}.list-main{padding:28px 18px}.list-top{align-items:flex-start;gap:12px}.list-panel{padding:18px;overflow:auto}.search-row{grid-template-columns:1fr}.knowledge-table{min-width:840px}}
+  @media(max-width:900px){.knowledge-nav{overflow:auto}.list-main{padding:28px 18px}.list-top{align-items:flex-start;gap:12px}.list-panel{padding:18px;overflow:auto}.search-row{grid-template-columns:1fr}.knowledge-table{min-width:880px}}
 </style>
 
 <div class="knowledge-list-page">
@@ -69,6 +69,6 @@
 
 </div></div>
 <script src="icons.js"></script>
-<script defer src="demo.js?v=20260623-chatbot-merge"></script>
+<script defer src="demo.js?v=20260624-chatbot-auto-link"></script>
 </body>
 </html>
