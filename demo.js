@@ -125,26 +125,23 @@
     {
       page: 'chatbot_rag_generated.html',
       label: 'RAG 문서 생성 결과',
-      target: { selector: '.rag-download-link', text: 'info_테라스의원.docx' },
+      target: { selector: '#chatbot-create-button', text: '챗봇 생성하기' },
       scrollTarget: true,
-      guide: '챗봇용 RAG 문서 2개가 생성되었습니다. info 문서를 눌러 다운로드 완료 상태를 확인합니다.',
-      next: 'chatbot_rag_download_modal.html',
-      extraTargets: [
-        { target: { selector: '.rag-download-link', text: 'reviews_테라스의원.docx' }, next: 'chatbot_rag_download_modal.html' }
-      ]
+      guide: "챗봇용 RAG 문서 2개가 생성되었습니다. 각 문서의 내용을 확인한 뒤 '챗봇 생성하기'를 선택해 RB dialog와 연동합니다.",
+      next: 'chatbot_rag_download_modal.html'
     },
     {
       page: 'chatbot_rag_download_modal.html',
-      label: '다운로드 완료',
-      target: { selector: '#download-confirm-button', text: '확인' },
-      guide: '다운로드 완료 팝업입니다. [확인]을 누르면 RB Dialog 지식 관리 목록으로 이동합니다.',
+      label: '챗봇 초기 설정 완료',
+      target: { selector: '#download-confirm-button', text: '연동 확인' },
+      guide: 'RAG 문서 기반 챗봇 연동 초기 설정 완료 팝업입니다. [연동 확인]을 누르면 RB Dialog 지식 관리 메뉴로 이동합니다.',
       next: 'chatbot_knowledge_list.html'
     },
     {
       page: 'chatbot_knowledge_list.html',
       label: 'RB Dialog 지식 관리 목록',
       target: { selector: '.knowledge-row', text: 'info_terrace' },
-      guide: 'RB Dialog 지식 관리 메뉴에 info_terrace와 review_terrace 문서가 등록되어 있습니다. info 문서를 눌러 벡터 임베딩 설정을 확인합니다.',
+      guide: 'RB Dialog 지식 관리 메뉴에 info_terrace와 review_terrace 문서가 자동 연동되어 있습니다. info 문서를 눌러 벡터 임베딩 설정을 확인합니다.',
       next: 'chatbot_info_embedding.html'
     },
     {
