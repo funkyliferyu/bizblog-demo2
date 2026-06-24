@@ -157,8 +157,16 @@
       page: 'chatbot_reviews_embedding.html',
       label: 'reviews 문서 벡터 임베딩 설정 조회',
       target: null,
-      guide: '방문자 리뷰 문서가 청크 크기 800, 오버랩 200, 총 849개 기준으로 임베딩되었습니다. 리뷰 내용과 오버랩 구성을 확인한 뒤 실제 챗봇 화면으로 이동합니다.',
-      guideCta: '챗봇 구현 확인하기',
+      guide: '방문자 리뷰 문서가 청크 크기 800, 오버랩 200, 총 849개 기준으로 임베딩되었습니다. 리뷰 내용과 오버랩 구성을 확인한 뒤 블로그 하단의 챗봇 연결 화면으로 이동합니다.',
+      guideCta: '블로그 배너 확인하기',
+      guidePosition: 'top-right',
+      next: 'chatbot_blog_entry.html'
+    },
+    {
+      page: 'chatbot_blog_entry.html',
+      label: '블로그 챗봇 이용 배너 확인',
+      target: { selector: '#chatbot-use-banner', text: '챗봇 이용하러 가기' },
+      guide: '챗봇설정이 완료되면 블로그와 비즈챗 등 비즈플래닛 기능에 챗봇이용하기를 연결 제공할 수 있습니다. 챗봇 이용 배너를 클릭해 챗봇을 이용합니다.',
       guidePosition: 'top-right',
       next: 'chatbot_live.html'
     },
